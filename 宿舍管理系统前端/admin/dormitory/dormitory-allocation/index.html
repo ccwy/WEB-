@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宿舍分配管理 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                        success: '#52C41A',
+                        warning: '#FAAD14',
+                        danger: '#FF4D4F',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-md hover:-translate-y-1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center">
+                <a href="../index.html" class="mr-2">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <i class="fa fa-building-o mr-2"></i>
+                宿舍管理系统
+            </h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm" id="currentTime"></span>
+                <div class="flex items-center">
+                    <img src="https://picsum.photos/32/32" alt="用户头像" class="w-8 h-8 rounded-full mr-2">
+                    <span class="text-sm">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- 页面标题 -->
+        <div class="mb-6 flex items-center">
+            <a href="../index.html" class="text-gray-500 hover:text-primary mr-2">
+                <i class="fa fa-home"></i>
+            </a>
+            <span class="text-gray-400">/</span>
+            <span class="ml-2 text-gray-600">宿舍分配管理</span>
+        </div>
+
+        <!-- 功能卡片区域 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- 分配宿舍 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-user-plus text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">分配宿舍</h3>
+                <p class="text-gray-500 text-sm mb-4">为新入住用户办理登记手续</p>
+                <button onclick="window.location.href='checkin.html'" 
+                        class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                    办理分配
+                </button>
+            </div>
+
+            <!-- 更换宿舍 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-exchange text-2xl text-secondary"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">更换宿舍</h3>
+                <p class="text-gray-500 text-sm mb-4">调整用户住宿分配信息</p>
+                <button onclick="window.location.href='room-transfer.html'" 
+                        class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90">
+                    办理更换
+                </button>
+            </div>
+
+            <!-- 办理退宿 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-danger/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-sign-out text-2xl text-danger"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">办理退宿</h3>
+                <p class="text-gray-500 text-sm mb-4">为用户办理退宿手续</p>
+                <button onclick="window.location.href='checkout.html'" 
+                        class="px-4 py-2 bg-danger text-white rounded-md hover:bg-danger/90">
+                    办理退宿
+                </button>
+            </div>
+
+            <!-- 住宿详情查询 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-search text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">住宿详情查询</h3>
+                <p class="text-gray-500 text-sm mb-4">查询用户住宿详细信息</p>
+                <button onclick="window.location.href='dormitory_query.html'" 
+                        class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600">
+                    进入查询
+                </button>
+            </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">总住宿人数</p>
+                        <h3 class="text-3xl font-bold mt-1" id="totalResidents">1,284</h3>
+                        <p class="text-success text-xs mt-2">
+                            <i class="fa fa-arrow-up"></i> 较上月增长 3.2%
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <i class="fa fa-users text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">可用房间数</p>
+                        <h3 class="text-3xl font-bold mt-1" id="availableRooms">86</h3>
+                        <p class="text-danger text-xs mt-2">
+                            <i class="fa fa-arrow-down"></i> 较上月减少 5.7%
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center">
+                        <i class="fa fa-bed text-success"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">本月退宿人数</p>
+                        <h3 class="text-3xl font-bold mt-1" id="checkoutThisMonth">32</h3>
+                        <p class="text-success text-xs mt-2">
+                            <i class="fa fa-arrow-down"></i> 较上月减少 12.3%
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center">
+                        <i class="fa fa-sign-out text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近操作记录 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">最近操作记录</h3>
+                <a href="records.html" class="text-primary text-sm hover:underline">查看全部</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作时间</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作类型</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户姓名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">宿舍信息</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-15 09:23</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs rounded-full bg-success/10 text-success">分配宿舍</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">张明</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">3号楼 302室</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">李管理员</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-14 15:47</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs rounded-full bg-danger/10 text-danger">办理退宿</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">李华</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">2号楼 205室</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">王管理员</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-14 10:15</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs rounded-full bg-secondary/10 text-secondary">更换宿舍</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">赵红</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">1号楼 108室 → 4号楼 402室</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">李管理员</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // 设置当前年份
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
+    

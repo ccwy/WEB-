@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>费用设置 - 水电费管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm" id="currentTime"></div>
+                <div class="flex items-center">
+                    <i class="fa fa-user-circle mr-1"></i>
+                    <span class="text-sm">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-gray-800">水电费设置</h2>
+        </div>
+        
+        <!-- 操作提示 -->
+        <div class="bg-blue-50 border-l-4 border-primary p-4 mb-6 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fa fa-info-circle text-primary"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        此处设置水电费的基础费率，新费率将在设置的生效日期起开始计算。修改费率前请确认当前计费周期已结算。
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 费率设置表单 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-6 h-full">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">
+                        <i class="fa fa-calculator text-primary mr-2"></i>费率设置
+                    </h3>
+                    
+                    <form id="feeSettingsForm">
+                        <div class="mb-4">
+                            <label for="effectiveDate" class="block text-sm font-medium text-gray-700 mb-1">生效日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="effectiveDate" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="waterFee" class="block text-sm font-medium text-gray-700 mb-1">自来水费（元/吨） <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="number" id="waterFee" step="0.01" min="0" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span class="text-gray-500">元/吨</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="electricityFee" class="block text-sm font-medium text-gray-700 mb-1">电费（元/度） <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="number" id="electricityFee" step="0.01" min="0" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span class="text-gray-500">元/度</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="gasFee" class="block text-sm font-medium text-gray-700 mb-1">燃气费（元/立方米）</label>
+                            <div class="relative">
+                                <input type="number" id="gasFee" step="0.01" min="0"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span class="text-gray-500">元/立方米</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="adjustReason" class="block text-sm font-medium text-gray-700 mb-1">调整原因</label>
+                            <textarea id="adjustReason" rows="3"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                      placeholder="请说明调整费率的原因..."></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" id="saveSettingsBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                保存设置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 当前费率和历史记录 -->
+            <div class="lg:col-span-2">
+                <!-- 当前生效费率 -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">
+                        <i class="fa fa fa-check-circle text-green-500 mr-2"></i>当前生效费率
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="text-sm text-gray-500 mb-1">自来水费</div>
+                            <div class="text-2xl font-semibold text-primary">3.80 元/吨</div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="text-sm text-gray-500 mb-1">电费</div>
+                            <div class="text-2xl font-semibold text-primary">0.56 元/度</div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 roundednded-lg border border-gray-100">
+                            <div class="text-sm text-gray-500 mb-1">燃气费</div>
+                            <div class="text-2xl font-semibold text-primary">2.50 元/立方米</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-sm text-gray-500">
+                        <p><i class="fa fa-calendar-clock-o mr-1"></i> 生效日期：2023-09-01</p>
+                        <p><i class="fa fa-user mr-1"></i> 最后更新人：系统管理员</p>
+                        <p><i class="fa fa-edit mr-1"></i> 调整原因：根据市政统一调价通知更新</p>
+                    </div>
+                </div>
+                
+                <!-- 历史费率记录 -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium pb-2 border-b border-gray-200">
+                            <i class="fa fa-history text-gray-500 mr-2"></i>历史费率记录
+                        </h3>
+                        <button class="text-primary text-sm hover:underline">
+                            <i class="fa fa-download mr-1"></i>导出记录
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking tracking">生效日期</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">自来水费(元/吨)</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">电费(元/度)</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">燃气费(元/立方米)</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新人</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2023-09-01</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3.80</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">0.56</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2.50</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">系统管理员</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-primary/80 view-details" data-id="20230901">查看详情</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2022-06-15</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3.60</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">0.54</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2.30</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">系统管理员</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-primary/80 view-details" data-id="20220615">查看详情</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2021-01-01</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3.40</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">0.52</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2.10</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">系统管理员</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-primary/80 view-details" data-id="20210101">查看详情</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-sm text-gray-500">显示 1 至 3 条，共 12 条记录</div>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>上一页</button>
+                            <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">4</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 确认保存模态框 -->
+    <div id="confirmSaveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">确认保存费率设置</h3>
+            <p class="text-gray-600 mb-4">您确定要更新以下费率设置吗？新费率将在指定日期生效。</p>
+            <div class="bg-gray-50 p-4 rounded-md mb-4 text-sm">
+                <p><span class="font-medium">生效日期：</span><span id="modalEffectiveDate">2024-05-01</span></p>
+                <p><span class="font-medium">自来水费：</span><span id="modalWaterFee">3.90</span> 元/吨</p>
+                <p><span class="font-medium">电费：</span><span id="modalElectricityFee">0.58</span> 元/度</p>
+                <p><span class="font-medium">燃气费：</span><span id="modalGasFee">2.60</span> 元/立方米</p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button id="cancelSaveBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="confirmSaveBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确认保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存成功提示 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">保存成功</h3>
+            <p class="text-gray-600 mb-6">费率设置已成功更新，将在指定日期生效</p>
+            <div class="flex justify-center">
+                <button id="closeSuccessBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史详情模态框 -->
+    <div id="historyDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">费率历史详情</h3>
+            <div class="bg-gray-50 p-4 rounded-md mb-4">
+                <p><span class="font-medium">生效日期：</span><span id="detailEffectiveDate">2023-09-01</span></p>
+                <p><span class="font-medium">截止日期：</span><span id="detailEndDate">2024-04-30</span></p>
+                <p><span class="font-medium">自来水费：</span><span id="detailWaterFee">3.80</span> 元/吨</p>
+                <p><span class="font-medium">电费：</span><span id="detailElectricityFee">0.56</span> 元/度</p>
+                <p><span class="font-medium">燃气费：</span><span id="detailGasFee">2.50</span> 元/立方米</p>
+                <p><span class="font-medium">更新时间：</span><span id="detailUpdateTime">2023-08-25 14:30:22</span></p>
+                <p><span class="font-medium">更新人：</span><span id="detailUpdater">系统管理员</span></p>
+                <p class="mt-2"><span class="font-medium">调整原因：</span></p>
+                <p id="detailReason" class="text-sm bg-white p-2 rounded">根据市政供水供电价格调整通知（2023-082号文件），对宿舍水电费进行相应调整。</p>
+            </div>
+            <div class="flex justify-end">
+                <button id="closeDetailBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前时间
+            function updateCurrentTime() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+
+            // 默认设置生效日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('effectiveDate').value = today;
+
+            // 模态框控制
+            const confirmSaveModal = document.getElementById('confirmSaveModal');
+            const successModal = document.getElementById('successModal');
+            const historyDetailModal = document.getElementById('historyDetailModal');
+            
+            const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+            const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+            const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+            const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+            const closeDetailBtn = document.getElementById('closeDetailBtn');
+            const viewDetailsBtns = document.querySelectorAll('.view-details');
+
+            // 打开保存确认模态框
+            saveSettingsBtn.addEventListener('click', function() {
+                // 表单验证
+                const effectiveDate = document.getElementById('effectiveDate').value;
+                const waterFee = document.getElementById('waterFee').value;
+                const electricityFee = document.getElementById('electricityFee').value;
+
+                if (!effectiveDate || !waterFee || !electricityFee) {
+                    alert('请填写必填的费率信息');
+                    return;
+                }
+
+                // 更新模态框内容
+                document.getElementById('modalEffectiveDate').textContent = effectiveDate;
+                document.getElementById('modalWaterFee').textContent = waterFee;
+                document.getElementById('modalElectricityFee').textContent = electricityFee;
+                document.getElementById('modalGasFee').textContent = document.getElementById('gasFee').value || '0.00';
+                
+                confirmSaveModal.classList.remove('hidden');
+            });
+
+            // 关闭保存确认模态框
+            cancelSaveBtn.addEventListener('click', function() {
+                confirmSaveModal.classList.add('hidden');
+            });
+
+            // 确认保存
+            confirmSaveBtn.addEventListener('click', function() {
+                confirmSaveModal.classList.add('hidden');
+                
+                // 模拟保存延迟
+                setTimeout(() => {
+                    successModal.classList.remove('hidden');
+                }, 800);
+            });
+
+            // 关闭成功提示
+            closeSuccessBtn.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+            });
+
+            // 查看历史详情
+            viewDetailsBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 在实际应用中，这里会根据data-id加载对应的历史记录详情
+                    const recordId = this.getAttribute('data-id');
+                    
+                    // 模拟不同记录的详情数据
+                    if (recordId === '20230901') {
+                        document.getElementById('detailEffectiveDate').textContent = '2023-09-01';
+                        document.getElementById('detailEndDate').textContent = '2024-04-30';
+                        document.getElementById('detailWaterFee').textContent = '3.80';
+                        document.getElementById('detailElectricityFee').textContent = '0.56';
+                        document.getElementById('detailGasFee').textContent = '2.50';
+                        document.getElementById('detailUpdateTime').textContent = '2023-08-25 14:30:22';
+                        document.getElementById('detailUpdater').textContent = '系统管理员';
+                        document.getElementById('detailReason').textContent = '根据市政供水供电价格调整通知（2023-082号文件），对宿舍水电费进行相应调整。';
+                    } else if (recordId === '20220615') {
+                        document.getElementById('detailEffectiveDate').textContent = '2022-06-15';
+                        document.getElementById('detailEndDate').textContent = '2023-08-31';
+                        document.getElementById('detailWaterFee').textContent = '3.60';
+                        document.getElementById('detailElectricityFee').textContent = '0.54';
+                        document.getElementById('detailGasFee').textContent = '2.30';
+                        document.getElementById('detailUpdateTime').textContent = '2022-06-10 09:15:33';
+                        document.getElementById('detailUpdater').textContent = '系统管理员';
+                        document.getElementById('detailReason').textContent = '年度常规调整，根据上一年度成本核算结果进行调整。';
+                    } else {
+                        document.getElementById('detailEffectiveDate').textContent = '2021-01-01';
+                        document.getElementById('detailEndDate').textContent = '2022-06-14';
+                        document.getElementById('detailWaterFee').textContent = '3.40';
+                        document.getElementById('detailElectricityFee').textContent = '0.52';
+                        document.getElementById('detailGasFee').textContent = '2.10';
+                        document.getElementById('detailUpdateTime').textContent = '2020-12-28 16:45:12';
+                        document.getElementById('detailUpdater').textContent = '系统管理员';
+                        document.getElementById('detailReason').textContent = '新学年开始，根据学校后勤管理规定更新水电费标准。';
+                    }
+                    
+                    historyDetailModal.classList.remove('hidden');
+                });
+            });
+
+            // 关闭历史详情模态框
+            closeDetailBtn.addEventListener('click', function() {
+                historyDetailModal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

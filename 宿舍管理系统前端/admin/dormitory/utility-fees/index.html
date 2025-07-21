@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水电费管理 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <h2 class="text-2xl font-semibold text-center mb-12 text-dark">水电费管理</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- 抄表登记 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-pencil text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">抄表登记</h3>
+                <p class="text-gray-500 text-sm mb-4">记录各宿舍当前水电表读数</p>
+                <button onclick="window.location.href='meter-reading.html'" 
+                        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                    进入登记
+                </button>
+            </div>
+            
+            <!-- 抄表历史记录 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-history text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">抄表历史记录</h3>
+                <p class="text-gray-500 text-sm mb-4">查询和管理历史抄表数据</p>
+                <button onclick="window.location.href='reading-history.html'" 
+                        class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                    查看记录
+                </button>
+            </div>
+            
+            <!-- 核算当月水电费 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-calculator text-2xl text-amber-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">核算当月水电费</h3>
+                <p class="text-gray-500 text-sm mb-4">计算并分配本月各宿舍费用</p>
+                <button onclick="window.location.href='calculate-fees.html'" 
+                        class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600">
+                    开始核算
+                </button>
+            </div>
+            
+            <!-- 水电费历史记录 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-file-text-o text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">水电费历史记录</h3>
+                <p class="text-gray-500 text-sm mb-4">查询历史月份水电费明细</p>
+                <button onclick="window.location.href='fee-history.html'" 
+                        class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600">
+                    查看明细
+                </button>
+            </div>
+            
+            <!-- 报告 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-bar-chart text-2xl text-indigo-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">水电费报告</h3>
+                <p class="text-gray-500 text-sm mb-4">生成水电费统计分析报告</p>
+                <button onclick="window.location.href='fee-report.html'" 
+                        class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">
+                    生成报告
+                </button>
+            </div>
+            
+            <!-- 水电费设置 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-cog text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">水电费设置</h3>
+                <p class="text-gray-500 text-sm mb-4">设置单价、计算公式等参数</p>
+                <button onclick="window.location.href='fee-settings.html'" 
+                        class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                    进入设置
+                </button>
+            </div>
+        </div>
+        
+        <!-- 本月水电费统计 -->
+        <div class="mt-12 bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+            <h3 class="text-xl font-semibold mb-6 text-dark">本月水电费统计</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="text-lg font-medium mb-4">总费用统计</h4>
+                    <div class="h-64">
+                        <canvas id="totalFeeChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-medium mb-4">楼栋费用对比</h4>
+                    <div class="h-64">
+                        <canvas id="buildingFeeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm mb-1">总电费</p>
+                    <p class="text-2xl font-bold text-blue-600">¥12,560.80</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm mb-1">总水费</p>
+                    <p class="text-2xl font-bold text-green-600">¥3,245.50</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm mb-1">总费用</p>
+                    <p class="text-2xl font-bold text-purple-600">¥15,806.30</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm mb-1">已缴费用</p>
+                    <p class="text-2xl font-bold text-amber-600">¥9,483.80</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 总费用统计图表
+            const totalFeeCtx = document.getElementById('totalFeeChart').getContext('2d');
+            new Chart(totalFeeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['电费', '水费'],
+                    datasets: [{
+                        data: [12560.80, 3245.50],
+                        backgroundColor: ['#3B82F6', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ¥${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 楼栋费用对比图表
+            const buildingFeeCtx = document.getElementById('buildingFeeChart').getContext('2d');
+            new Chart(buildingFeeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1号楼', '2号楼', '3号楼', '4号楼'],
+                    datasets: [
+                        {
+                            label: '电费',
+                            data: [3250.50, 2890.30, 3120.00, 3300.00],
+                            backgroundColor: '#3B82F6'
+                        },
+                        {
+                            label: '水费',
+                            data: [850.20, 780.30, 820.00, 795.00],
+                            backgroundColor: '#10B981'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ¥${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更换宿舍 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-dark">更换宿舍</h2>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+            <form id="roomTransferForm">
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">用户信息</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="personId" class="block text-sm font-medium text-gray-700 mb-1">用户ID</label>
+                            <input type="text" id="personId" value="P202400156" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="personName" class="block text-sm font-medium text-gray-700 mb-1">姓名 <span class="text-red-500">*</span></label>
+                            <input type="text" id="personName" value="张三" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="personNo" class="block text-sm font-medium text-gray-700 mb-1">学号/工号</label>
+                            <input type="text" id="personNo" value="2022014568" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700 mb-1">所属院系/部门</label>
+                            <input type="text" id="department" value="计算机科学与技术学院" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">当前住宿信息</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="currentBuilding" class="block text-sm font-medium text-gray-700 mb-1">宿舍楼</label>
+                            <input type="text" id="currentBuilding" value="3号楼" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="currentRoom" class="block text-sm font-medium text-gray-700 mb-1">房间号</label>
+                            <input type="text" id="currentRoom" value="402" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="currentBed" class="block text-sm font-medium text-gray-700 mb-1">床位号</label>
+                            <input type="text" id="currentBed" value="2号床" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                            <label for="checkinDate" class="block text-sm font-medium text-gray-700 mb-1">入住日期</label>
+                            <input type="date" id="checkinDate" value="2023-09-01" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="currentRoommates" class="block text-sm font-medium text-gray-700 mb-1">当前室友</label>
+                            <input type="text" id="currentRoommates" value="李四、王五、赵六" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">新住宿信息 <span class="text-red-500">*</span></h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="newBuilding" class="block text-sm font-medium text-gray-700 mb-1">新宿舍楼 <span class="text-red-500">*</span></label>
+                            <select id="newBuilding" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="">请选择宿舍楼</option>
+                                <option value="1">1号楼</option>
+                                <option value="2" selected>2号楼</option>
+                                <option value="3">3号楼</option>
+                                <option value="4">4号楼</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="newRoom" class="block text-sm font-medium text-gray-700 mb-1">新房间号 <span class="text-red-500">*</span></label>
+                            <input type="text" id="newRoom" value="305" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <button type="button" id="checkRoomAvailabilityBtn" class="mt-1 text-xs text-primary hover:underline">
+                                <i class="fa fa-search mr-1"></i>检查房间可用性
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <label for="newBed" class="block text-sm font-medium text-gray-700 mb-1">新床位号 <span class="text-red-500">*</span></label>
+                            <select id="newBed" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="">请选择床位号</option>
+                                <option value="1">1号床</option>
+                                <option value="2">2号床</option>
+                                <option value="3" selected>3号床</option>
+                                <option value="4">4号床</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="roomAvailability" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-md hidden">
+                        <p class="text-sm text-green-700"><i class="fa fa-check-circle mr-1"></i> 2号楼305室3号床当前为空置状态，可以安排入住</p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <label for="transferDate" class="block text-sm font-medium text-gray-700 mb-1">更换日期 <span class="text-red-500">*</span></label>
+                        <input type="date" id="transferDate" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">更换原因 <span class="text-red-500">*</span></h3>
+                    
+                    <div>
+                        <select id="transferReasonType" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">请选择更换原因类型</option>
+                            <option value="adjustment">正常调整</option>
+                            <option value="conflict">室友矛盾</option>
+                            <option value="health">健康原因</option>
+                            <option value="academic">学业需要</option>
+                            <option value="other">其他原因</option>
+                        </select>
+                        
+                        <textarea id="transferReason" rows="4" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                  placeholder="请详细说明更换宿舍的原因...">因专业调整，与同专业同学住在一起便于学习交流</textarea>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">审批信息</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="approver" class="block text-sm font-medium text-gray-700 mb-1">审批人 <span class="text-red-500">*</span></label>
+                            <input type="text" id="approver" value="李主任" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="approvalDate" class="block text-sm font-medium text-gray-700 mb-1">审批日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="approvalDate" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <label for="approvalOpinion" class="block text-sm font-medium text-gray-700 mb-1">审批意见</label>
+                        <textarea id="approvalOpinion" rows="3"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                  placeholder="请输入审批意见...">同意更换宿舍，望尽快办理相关手续</textarea>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <a href="index.html" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</a>
+                    <button type="button" id="submitTransferBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">提交更换申请</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 房间检查结果弹窗 -->
+    <div id="roomCheckModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">房间信息</h3>
+                <button id="closeRoomCheckModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 mb-2"><span class="font-medium">宿舍楼：</span>2号楼</p>
+                <p class="text-gray-700 mb-2"><span class="font-medium">房间号：</span>305</p>
+                <p class="text-gray-700 mb-2"><span class="font-medium">房间类型：</span>四人间</p>
+                <p class="text-gray-700 mb-2"><span class="font-medium">当前入住人数：</span>3人</p>
+                <p class="text-gray-700 mb-2"><span class="font-medium">空置床位：</span>1个（3号床）</p>
+                <p class="text-gray-700"><span class="font-medium">现有室友：</span>钱七、孙八、周九</p>
+            </div>
+            <div class="text-center">
+                <button id="confirmRoomBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确认使用此房间</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交成功提示 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">提交成功</h3>
+            <p class="text-gray-600 mb-4">宿舍更换申请已成功提交</p>
+            <p class="text-gray-600 mb-6">更换单号：RT20240405001</p>
+            <div class="flex justify-center gap-3">
+                <button id="newTransferBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">新的更换申请</button>
+                <a href="index.html" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">返回列表</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkRoomAvailabilityBtn = document.getElementById('checkRoomAvailabilityBtn');
+            const roomCheckModal = document.getElementById('roomCheckModal');
+            const closeRoomCheckModal = document.getElementById('closeRoomCheckModal');
+            const confirmRoomBtn = document.getElementById('confirmRoomBtn');
+            const roomAvailability = document.getElementById('roomAvailability');
+            const submitTransferBtn = document.getElementById('submitTransferBtn');
+            const successModal = document.getElementById('successModal');
+            const newTransferBtn = document.getElementById('newTransferBtn');
+            
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transferDate').value = today;
+            document.getElementById('approvalDate').value = today;
+            
+            // 检查房间可用性
+            checkRoomAvailabilityBtn.addEventListener('click', function() {
+                const building = document.getElementById('newBuilding').value;
+                const room = document.getElementById('newRoom').value;
+                
+                if (!building || !room) {
+                    alert('请先选择宿舍楼和房间号');
+                    return;
+                }
+                
+                roomCheckModal.classList.remove('hidden');
+            });
+            
+            // 关闭房间检查弹窗
+            closeRoomCheckModal.addEventListener('click', function() {
+                roomCheckModal.classList.add('hidden');
+            });
+            
+            // 确认使用房间
+            confirmRoomBtn.addEventListener('click', function() {
+                roomCheckModal.classList.add('hidden');
+                roomAvailability.classList.remove('hidden');
+                
+                // 3秒后自动隐藏提示
+                setTimeout(() => {
+                    roomAvailability.classList.add('hidden');
+                }, 3000);
+            });
+            
+            // 提交更换申请
+            submitTransferBtn.addEventListener('click', function() {
+                // 简单表单验证
+                const requiredFields = document.querySelectorAll('#roomTransferForm [required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        isValid = false;
+                        field.classList.add('border-red-500');
+                        field.addEventListener('input', function() {
+                            this.classList.remove('border-red-500');
+                        });
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('请填写所有必填字段');
+                    return;
+                }
+                
+                // 显示加载状态
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>提交中...';
+                this.disabled = true;
+                
+                // 模拟提交延迟
+                setTimeout(() => {
+                    this.innerHTML = '提交更换申请';
+                    this.disabled = false;
+                    successModal.classList.remove('hidden');
+                }, 1500);
+            });
+            
+            // 新的更换申请
+            newTransferBtn.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+                // 重置表单（实际应用中可能需要更复杂的重置逻辑）
+                document.getElementById('transferReason').value = '';
+            });
+            
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

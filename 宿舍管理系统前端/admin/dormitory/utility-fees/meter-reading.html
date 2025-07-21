@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抄表登记 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-dark">抄表登记</h2>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+            <div class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label for="readingDate" class="block text-sm font-medium text-gray-700 mb-1">抄表日期 <span class="text-red-500">*</span></label>
+                        <input type="date" id="readingDate" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    <div>
+                        <label for="readingPerson" class="block text-sm font-medium text-gray-700 mb-1">抄表人 <span class="text-red-500">*</span></label>
+                        <input type="text" id="readingPerson" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    <div>
+                        <label for="buildingFilter" class="block text-sm font-medium text-gray-700 mb-1">选择楼栋</label>
+                        <select id="buildingFilter" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">所有楼栋</option>
+                            <option value="1号楼">1号楼</option>
+                            <option value="2号楼">2号楼</option>
+                            <option value="3号楼">3号楼</option>
+                            <option value="4号楼">4号楼</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                                    <input type="checkbox" id="selectAllRooms">
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">楼栋</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">宿舍号</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">上次电表读数</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">本次电表读数 <span class="text-red-500">*</span></th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">上次水表读数</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">本次水表读数 <span class="text-red-500">*</span></th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">备注</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="roomsTableBody">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="room-checkbox">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">1号楼</td>
+                                <td class="px-6 py-4 whitespace-nowrap">101室</td>
+                                <td class="px-6 py-4 whitespace-nowrap">1189</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="electricity-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">315</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="water-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" class="notes w-full px-2 py-1 border border-gray-300 rounded-md">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="room-checkbox">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">1号楼</td>
+                                <td class="px-6 py-4 whitespace-nowrap">102室</td>
+                                <td class="px-6 py-4 whitespace-nowrap">956</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="electricity-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">289</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="water-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" class="notes w-full px-2 py-1 border border-gray-300 rounded-md">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="room-checkbox">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">2号楼</td>
+                                <td class="px-6 py-4 whitespace-nowrap">201室</td>
+                                <td class="px-6 py-4 whitespace-nowrap">1320</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="electricity-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">410</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="water-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" class="notes w-full px-2 py-1 border border-gray-300 rounded-md">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="room-checkbox">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">2号楼</td>
+                                <td class="px-6 py-4 whitespace-nowrap">203室</td>
+                                <td class="px-6 py-4 whitespace-nowrap">875</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="electricity-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">265</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="number" class="water-reading w-full px-2 py-1 border border-gray-300 rounded-md" required>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" class="notes w-full px-2 py-1 border border-gray-300 rounded-md">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 分页 -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between mt-4">
+                    <div class="text-sm text-gray-700">
+                        显示 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">48</span> 条记录
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-1 border border-primary bg-primary text-white rounded">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50">3</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="window.location.href='index.html'" 
+                        class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button type="button" id="saveReadingBtn" 
+                        class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                    保存抄表记录
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 保存成功提示 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">保存成功</h3>
+            <p class="text-gray-600 mb-4">抄表记录已成功保存</p>
+            <button id="successModalBtn" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                确定
+            </button>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllRooms = document.getElementById('selectAllRooms');
+            const roomCheckboxes = document.querySelectorAll('.room-checkbox');
+            const saveReadingBtn = document.getElementById('saveReadingBtn');
+            const successModal = document.getElementById('successModal');
+            const successModalBtn = document.getElementById('successModalBtn');
+            const buildingFilter = document.getElementById('buildingFilter');
+            
+            // 设置默认抄表日期为今天（北京时区）
+            const today = new Date();
+            const beijingDate = new Date(today.getTime() + 8 * 60 * 60 * 1000);
+            document.getElementById('readingDate').value = beijingDate.toISOString().split('T')[0];
+            
+            // 全选/取消全选
+            selectAllRooms.addEventListener('change', function() {
+                roomCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+            
+            // 楼栋筛选
+            buildingFilter.addEventListener('change', function() {
+                const selectedBuilding = this.value;
+                const rows = document.querySelectorAll('#roomsTableBody tr');
+                
+                rows.forEach(row => {
+                    const building = row.querySelector('td:nth-child(2)').textContent;
+                    if (selectedBuilding === '' || building === selectedBuilding) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 保存抄表记录
+            saveReadingBtn.addEventListener('click', function() {
+                // 验证必填项
+                const readingDate = document.getElementById('readingDate').value;
+                const readingPerson = document.getElementById('readingPerson').value;
+                
+                if (!readingDate) {
+                    alert('请选择抄表日期');
+                    return;
+                }
+                
+                if (!readingPerson) {
+                    alert('请输入抄表人');
+                    return;
+                }
+                
+                // 检查是否有选中的房间且已填写读数
+                const checkedRooms = Array.from(roomCheckboxes).filter(cb => cb.checked);
+                
+                if (checkedRooms.length === 0) {
+                    alert('请至少选择一个宿舍进行抄表');
+                    return;
+                }
+                
+                let hasInvalid = false;
+                checkedRooms.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const electricityReading = row.querySelector('.electricity-reading').value;
+                    const waterReading = row.querySelector('.water-reading').value;
+                    
+                    if (!electricityReading || !waterReading) {
+                        hasInvalid = true;
+                        // 高亮显示未填写的字段
+                        if (!electricityReading) {
+                            row.querySelector('.electricity-reading').classList.add('border-red-500');
+                        }
+                        if (!waterReading) {
+                            row.querySelector('.water-reading').classList.add('border-red-500');
+                        }
+                    } else {
+                        // 移除高亮
+                        row.querySelector('.electricity-reading').classList.remove('border-red-500');
+                        row.querySelector('.water-reading').classList.remove('border-red-500');
+                    }
+                });
+                
+                if (hasInvalid) {
+                    alert('请填写所有选中宿舍的水电表读数');
+                    return;
+                }
+                
+                // 显示成功提示
+                successModal.classList.remove('hidden');
+            });
+            
+            // 关闭成功提示
+            successModalBtn.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+                // 可以选择留在当前页面继续添加或返回列表
+                // window.location.href = 'index.html';
+            });
+            
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

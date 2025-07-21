@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房间空置率报告 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.tailwindcss.com/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        vacancy: '#FF7D00',
+                        occupied: '#36CFC9'
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm" id="currentTime"></div>
+                <div class="flex items-center">
+                    <i class="fa fa-user-circle mr-1"></i>
+                    <span class="text-sm">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-gray-800">房间空置率报告</h2>
+        </div>
+        
+        <!-- 筛选区域 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="analysisType" class="block text-sm font-medium text-gray-700 mb-1">分析类型</label>
+                    <select id="analysisType" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="room">按房间</option>
+                        <option value="bed">按床位</option>
+                        <option value="building">按楼栋</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="timeRange" class="block text-sm font-medium text-gray-700 mb-1">时间范围</label>
+                    <select id="timeRange" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="current">当前状态</option>
+                        <option value="monthly">近30天</option>
+                        <option value="quarterly">近90天</option>
+                        <option value="yearly">近一年</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="roomType" class="block text-sm font-medium text-gray-700 mb-1">房间类型</label>
+                    <select id="roomType" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部类型</option>
+                        <option value="4">四人间</option>
+                        <option value="6">六人间</option>
+                        <option value="8">八人间</option>
+                        <option value="single">单人间</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="buildingFilter" class="block text-sm font-medium text-gray-700 mb-1">楼栋筛选</label>
+                    <select id="buildingFilter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部楼栋</option>
+                        <option value="1">1号楼</option>
+                        <option value="2">2号楼</option>
+                        <option value="3">3号楼</option>
+                        <option value="4">4号楼</option>
+                        <option value="5">5号楼</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mt-4">
+                <div class="text-sm text-gray-500">
+                    数据更新时间: <span id="dataUpdateTime">2024-06-15 09:15:30</span>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="refreshBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <i class="fa fa-refresh mr-1"></i>刷新
+                    </button>
+                    <button id="exportBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                        <i class="fa fa-file-excel-o mr-1"></i>导出数据
+                    </button>
+                    <button id="printBtn" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                        <i class="fa fa-print mr-1"></i>打印
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空置概览 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-vacancy">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">房间空置率</p>
+                        <h3 class="text-2xl font-semibold mt-1">21.5%</h3>
+                        <p class="text-sm mt-2 text-red-600">
+                            <i class="fa fa-arrow-up mr-1"></i> 较上月上升 2.3%
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <i class="fa fa-home text-vacancy"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">空置房间数</span>
+                        <span class="font-medium">69间</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-1">
+                        <span class="text-gray-500">总房间数</span>
+                        <span class="font-medium">320间</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-vacancy">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">床位空置率</p>
+                        <h3 class="text-2xl font-semibold mt-1">23.0%</h3>
+                        <p class="text-sm mt-2 text-green-600">
+                            <i class="fa fa-arrow-down mr-1"></i> 较上月下降 1.2%
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <i class="fa fa-bed text-vacancy"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">空置床位数</span>
+                        <span class="font-medium">294个</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-1">
+                        <span class="text-gray-500">总床位数</span>
+                        <span class="font-medium">1280个</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-primary">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">最长空置时间</p>
+                        <h3 class="text-2xl font-semibold mt-1">45天</h3>
+                        <p class="text-sm mt-2 text-gray-500">
+                            <i class="fa fa-info-circle mr-1"></i> 3号楼-402房间
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fa fa-calendar text-primary"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">平均空置天数</span>
+                        <span class="font-medium">12.6天</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-1">
+                        <span class="text-gray-500">空置超过30天</span>
+                        <span class="font-medium">12间</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">
+                    <i class="fa fa-bar-chart text-primary mr-2"></i>各楼栋空置率对比
+                </h3>
+                <div class="h-80">
+                    <canvas id="buildingVacancyChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">
+                    <i class="fa fa-line-chart text-primary mr-2"></i>空置率趋势变化
+                </h3>
+                <div class="h-80">
+                    <canvas id="vacancyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空置房间详情 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">
+                <i class="fa fa-list text-primary mr-2"></i>长期空置房间列表（>30天）
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">楼栋</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间号</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间类型</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">空置天数</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">上次入住时间</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">RM00308</td>
+                            <td class="px-6 py-4 whitespace-nowrap">3号楼</td>
+                            <td class="px-6 py-4 whitespace-nowrap">402</td>
+                            <td class="px-6 py-4 whitespace-nowrap">四人间</td>
+                            <td class="px-6 py-4 whitespace-nowrap font-medium text-red-600">45天</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2024-05-01</td>
+                        </tr>
+                        <!-- 更多数据行... -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 时间更新和图表初始化逻辑（与其他报告页面类似）
+        function updateDateTime() { /* 实现略 */ }
+        function initCharts() { /* 实现略 */ }
+        window.onload = () => { /* 实现略 */ };
+    </script>
+</body>
+</html>

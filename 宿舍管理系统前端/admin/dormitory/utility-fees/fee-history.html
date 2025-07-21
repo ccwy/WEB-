@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>费用历史 - 水电费管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#52c41a',
+                        pending: '#faad14',
+                        overdue: '#f5222d'
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm" id="currentTime"></div>
+                <div class="flex items-center">
+                    <i class="fa fa-user-circle mr-1"></i>
+                    <span class="text-sm">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-gray-800">费用历史记录</h2>
+        </div>
+        
+        <!-- 筛选和搜索区域 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label for="feeType" class="block text-sm font-medium text-gray-700 mb-1">费用类型</label>
+                    <select id="feeType" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部类型</option>
+                        <option value="water">水费</option>
+                        <option value="electricity">电费</option>
+                        <option value="gas">燃气费</option>
+                        <option value="all">全部费用</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="feeBuilding" class="block text-sm font-medium text-gray-700 mb-1">楼栋</label>
+                    <select id="feeBuilding" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部楼栋</option>
+                        <option value="1">1号楼</option>
+                        <option value="2">2号楼</option>
+                        <option value="3">3号楼</option>
+                        <option value="4">4号楼</option>
+                        <option value="5">5号楼</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="paymentStatus" class="block text-sm font-medium text-gray-700 mb-1">缴费状态</label>
+                    <select id="paymentStatus" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部状态</option>
+                        <option value="paid">已缴费</option>
+                        <option value="pending">待缴费</option>
+                        <option value="overdue">已逾期</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="feeDateRange" class="block text-sm font-medium text-gray-700 mb-1">费用周期</label>
+                    <select id="feeDateRange" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部周期</option>
+                        <option value="current">当前周期</option>
+                        <option value="last">上一周期</option>
+                        <option value="last3">近3个月</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="relative w-full sm:w-64">
+                    <input type="text" placeholder="搜索单号、宿舍号或姓名..." 
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                
+                <div class="flex space-x-3 w-full sm:w-auto">
+                    <button id="resetFeeFilterBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex-1 sm:flex-none">
+                        <i class="fa fa-refresh mr-1"></i>重置筛选
+                    </button>
+                    <button id="refreshFeeBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex-1 sm:flex-none">
+                        <i class="fa fa-sync mr-1"></i>刷新数据
+                    </button>
+                    <button id="exportFeeBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex-1 sm:flex-none">
+                        <i class="fa fa-file-excel-o mr-1"></i>导出记录
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 费用统计概览 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">待缴费用总计</p>
+                        <h3 class="text-2xl font-semibold mt-1 text-pending">¥ 12,458.60</h3>
+                        <p class="text-sm mt-2 text-gray-500">
+                            共 <span class="font-medium">126</span> 条记录
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <i class="fa fa-clock-o text-pending"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">已缴费用总计</p>
+                        <h3 class="text-2xl font-semibold mt-1 text-success">¥ 56,892.35</h3>
+                        <p class="text-sm mt-2 text-gray-500">
+                            共 <span class="font-medium">842</span> 条记录
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <i class="fa fa-check-circle text-success"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">逾期未缴费用</p>
+                        <h3 class="text-2xl font-semibold mt-1 text-overdue">¥ 3,286.40</h3>
+                        <p class="text-sm mt-2 text-gray-500">
+                            共 <span class="font-medium">32</span> 条记录
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <i class="fa fa-exclamation-circle text-overdue"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 费用历史记录表格 -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium pb-2 border-b border-gray-200">
+                    <i class="fa fa-money text-primary mr-2"></i>费用记录列表
+                </h3>
+                <div class="flex items-center">
+                    <label for="feePerPage" class="text-sm text-gray-500 mr-2">每页记录数:</label>
+                    <select id="feePerPage" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">费用单号</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周期</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">楼栋/宿舍</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">住户</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">费用类型</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">金额(元)</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">缴费日期</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">FY20240531001</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/305室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">张三、李四</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">全部费用</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">1,568.30</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">已缴费</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05-31</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-fee" data-id="1">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">FY20240531002</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/306室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">王五、赵六</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">全部费用</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">1,426.50</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">已缴费</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05-30</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-fee" data-id="2">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">FY20240531003</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2号楼/402室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">孙七、周八</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">全部费用</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">1,689.20</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">待缴费</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">-</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-fee" data-id="3">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">FY20240430056</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-04</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">1号楼/201室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">吴九、郑十</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">全部费用</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">1,352.80</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">已逾期</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">-</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-fee" data-id="4">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">FY20240531004</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/307室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">钱十一、孙十二</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">电费</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">865.40</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">已缴费</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2024-05-29</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-fee" data-id="5">查看详情</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="flex justify-between items-center mt-4">
+                <div class="text-sm text-gray-500">显示 1 至 5 条，共 998 条记录</div>
+                <div class="flex space-x-1">
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>上一页</button>
+                    <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md">1</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">4</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">5</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">...</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">100</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">下一页</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 费用详情模态框 -->
+    <div id="feeDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-semibold">费用记录详情</h3>
+                <div class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800" id="detailFeeStatus">
+                    已缴费
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-sm text-gray-500">费用单号</p>
+                    <p class="font-medium" id="detailFeeId">FY20240531001</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">费用周期</p>
+                    <p class="font-medium" id="detailFeePeriod">2024年05月</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">楼栋/宿舍</p>
+                    <p class="font-medium" id="detailFeeLocation">3号楼/305室</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">住户</p>
+                    <p class="font-medium" id="detailResidents">张三、李四</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">费用生成日期</p>
+                    <p class="font-medium" id="detailGenerateDate">2024-05-26</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">缴费截止日期</p>
+                    <p class="font-medium" id="detailDueDate">2024-06-10</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">缴费日期</p>
+                    <p class="font-medium" id="detailPayDate">2024-05-31</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">缴费方式</p>
+                    <p class="font-medium" id="detailPayMethod">微信支付</p>
+                </div>
+            </div>
+            
+            <!-- 费用明细 -->
+            <div class="mb-6">
+                <p class="text-sm text-gray-500 mb-2">费用明细</p>
+                <div class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                    <div class="flex justify-between p-3">
+                        <span>水费 (22.6吨 × ¥3.80/吨)</span>
+                        <span class="font-medium">¥85.88</span>
+                    </div>
+                    <div class="flex justify-between p-3">
+                        <span>电费 (267.6度 × ¥0.56/度)</span>
+                        <span class="font-medium">¥149.86</span>
+                    </div>
+                    <div class="flex justify-between p-3">
+                        <span>燃气费 (23.3立方米 × ¥2.50/立方米)</span>
+                        <span class="font-medium">¥58.25</span>
+                    </div>
+                    <div class="flex justify-between p-3 font-bold text-lg text-primary">
+                        <span>总计</span>
+                        <span>¥293.99</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500 mb-1">备注信息</p>
+                <p class="text-sm bg-gray-50 p-3 rounded-md" id="detailFeeNotes">费用已通过微信支付成功缴纳，交易单号：4200002235689741523654789654</p>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="printReceiptBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                    <i class="fa fa-print mr-1"></i>打印凭证
+                </button>
+                <button id="closeFeeDetailBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出成功提示 -->
+    <div id="exportFeeSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">导出成功</h3>
+            <p class="text-gray-600 mb-6">费用历史记录已成功导出为Excel文件</p>
+            <div class="flex justify-center">
+                <button id="closeFeeExportModalBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前时间
+            function updateCurrentTime() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // 模态框控制
+            const feeDetailModal = document.getElementById('feeDetailModal');
+            const exportFeeSuccessModal = document.getElementById('exportFeeSuccessModal');
+            const viewFeeBtns = document.querySelectorAll('.view-fee');
+            const closeFeeDetailBtn = document.getElementById('closeFeeDetailBtn');
+            const closeFeeExportModalBtn = document.getElementById('closeFeeExportModalBtn');
+            const refreshFeeBtn = document.getElementById('refreshFeeBtn');
+            const exportFeeBtn = document.getElementById('exportFeeBtn');
+            const resetFeeFilterBtn = document.getElementById('resetFeeFilterBtn');
+            const printReceiptBtn = document.getElementById('printReceiptBtn');
+            
+            // 查看费用详情
+            viewFeeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const recordId = this.getAttribute('data-id');
+                    
+                    // 根据不同记录ID模拟不同详情数据
+                    if (recordId === '1') {
+                        document.getElementById('detailFeeId').textContent = 'FY20240531001';
+                        document.getElementById('detailFeePeriod').textContent = '2024年05月';
+                        document.getElementById('detailFeeLocation').textContent = '3号楼/305室';
+                        document.getElementById('detailResidents').textContent = '张三、李四';
+                        document.getElementById('detailGenerateDate').textContent = '2024-05-26';
+                        document.getElementById('detailDueDate').textContent = '2024-06-10';
+                        document.getElementById('detailPayDate').textContent = '2024-05-31';
+                        document.getElementById('detailPayMethod').textContent = '微信支付';
+                        document.getElementById('detailFeeStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">已缴费</span>';
+                        document.getElementById('detailFeeNotes').textContent = '费用已通过微信支付成功缴纳，交易单号：4200002235689741523654789654';
+                    } else if (recordId === '3') {
+                        document.getElementById('detailFeeId').textContent = 'FY20240531003';
+                        document.getElementById('detailFeePeriod').textContent = '2024年05月';
+                        document.getElementById('detailFeeLocation').textContent = '2号楼/402室';
+                        document.getElementById('detailResidents').textContent = '孙七、周八';
+                        document.getElementById('detailGenerateDate').textContent = '2024-05-26';
+                        document.getElementById('detailDueDate').textContent = '2024-06-10';
+                        document.getElementById('detailPayDate').textContent = '-';
+                        document.getElementById('detailPayMethod').textContent = '-';
+                        document.getElementById('detailFeeStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">待缴费</span>';
+                        document.getElementById('detailFeeNotes').textContent = '费用已生成，等待住户缴纳。';
+                    } else if (recordId === '4') {
+                        document.getElementById('detailFeeId').textContent = 'FY20240430056';
+                        document.getElementById('detailFeePeriod').textContent = '2024年04月';
+                        document.getElementById('detailFeeLocation').textContent = '1号楼/201室';
+                        document.getElementById('detailResidents').textContent = '吴九、郑十';
+                        document.getElementById('detailGenerateDate').textContent = '2024-04-25';
+                        document.getElementById('detailDueDate').textContent = '2024-05-10';
+                        document.getElementById('detailPayDate').textContent = '-';
+                        document.getElementById('detailPayMethod').textContent = '-';
+                        document.getElementById('detailFeeStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">已逾期</span>';
+                        document.getElementById('detailFeeNotes').textContent = '该费用已逾期，请及时联系住户缴纳。';
+                    } else {
+                        document.getElementById('detailFeeId').textContent = recordId === '2' ? 'FY20240531002' : 'FY20240531004';
+                        document.getElementById('detailFeePeriod').textContent = '2024年05月';
+                        document.getElementById('detailFeeLocation').textContent = recordId === '2' ? '3号楼/306室' : '3号楼/307室';
+                        document.getElementById('detailResidents').textContent = recordId === '2' ? '王五、赵六' : '钱十一、孙十二';
+                        document.getElementById('detailGenerateDate').textContent = recordId === '2' ? '2024-05-26' : '2024-05-25';
+                        document.getElementById('detailDueDate').textContent = '2024-06-10';
+                        document.getElementById('detailPayDate').textContent = recordId === '2' ? '2024-05-30' : '2024-05-29';
+                        document.getElementById('detailPayMethod').textContent = recordId === '2' ? '支付宝' : '微信支付';
+                        document.getElementById('detailFeeStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">已缴费</span>';
+                        document.getElementById('detailFeeNotes').textContent = recordId === '2' ? '费用已通过支付宝成功缴纳，交易单号：2024053022001478563800654789' : '电费已通过微信支付成功缴纳，交易单号：4200002235689741523654789654';
+                    }
+                    
+                    feeDetailModal.classList.remove('hidden');
+                });
+            });
+            
+            // 关闭详情模态框
+            closeFeeDetailBtn.addEventListener('click', function() {
+                feeDetailModal.classList.add('hidden');
+            });
+            
+            // 打印缴费凭证
+            printReceiptBtn.addEventListener('click', function() {
+                alert('正在准备打印缴费凭证...');
+                // 实际应用中这里会调用打印API
+            });
+            
+            // 刷新数据
+            refreshFeeBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>刷新中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert('费用记录已成功刷新');
+                }, 1200);
+            });
+            
+            // 导出记录
+            exportFeeBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>导出中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    exportFeeSuccessModal.classList.remove('hidden');
+                }, 1800);
+            });
+            
+            // 关闭导出提示
+            closeFeeExportModalBtn.addEventListener('click', function() {
+                exportFeeSuccessModal.classList.add('hidden');
+            });
+            
+            // 重置筛选条件
+            resetFeeFilterBtn.addEventListener('click', function() {
+                document.getElementById('feeType').value = 'all';
+                document.getElementById('feeBuilding').value = 'all';
+                document.getElementById('paymentStatus').value = 'all';
+                document.getElementById('feeDateRange').value = 'all';
+                document.querySelector('input[placeholder="搜索单号、宿舍号或姓名..."]').value = '';
+            });
+        });
+    </script>
+</body>
+</html>
+    

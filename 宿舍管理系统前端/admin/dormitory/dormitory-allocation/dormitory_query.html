@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>住宿查询 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+            <div class="flex items-center">
+                <a href="../index.html" class="text-primary hover:text-primary/80 mr-2">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <h2 class="text-2xl font-semibold text-dark">住宿查询</h2>
+            </div>
+        </div>
+
+        <!-- 筛选区域 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6 max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div>
+                    <label for="searchBuilding" class="block text-sm font-medium text-gray-700 mb-1">宿舍楼</label>
+                    <select id="searchBuilding" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="">所有楼栋</option>
+                        <option value="1">1号楼</option>
+                        <option value="2">2号楼</option>
+                        <option value="3">3号楼</option>
+                        <option value="4">4号楼</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchRoomType" class="block text-sm font-medium text-gray-700 mb-1">房间类型</label>
+                    <select id="searchRoomType" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="">所有类型</option>
+                        <option value="4">四人间</option>
+                        <option value="6">六人间</option>
+                        <option value="8">八人间</option>
+                        <option value="single">单人间</option>
+                        <option value="double">双人间</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchGender" class="block text-sm font-medium text-gray-700 mb-1">性别限制</label>
+                    <select id="searchGender" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="">不限</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchStatus" class="block text-sm font-medium text-gray-700 mb-1">房间状态</label>
+                    <select id="searchStatus" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="">所有状态</option>
+                        <option value="full">已住满</option>
+                        <option value="available">有空位</option>
+                        <option value="empty">空置</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchName" class="block text-sm font-medium text-gray-700 mb-1">姓名查询</label>
+                    <input type="text" id="searchName" placeholder="输入姓名查询" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                </div>
+                <div class="flex items-end">
+                    <button id="searchBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 w-full">
+                        <i class="fa fa-search mr-2"></i>查询
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 住宿信息表格 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">宿舍楼</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间号</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">性别限制</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">容量</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">已住人数</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">居住人员详情</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- 示例数据行 -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">RM00305</td>
+                            <td class="px-6 py-4 whitespace-nowrap">3号楼</td>
+                            <td class="px-6 py-4 whitespace-nowrap">305</td>
+                            <td class="px-6 py-4 whitespace-nowrap">四人间</td>
+                            <td class="px-6 py-4 whitespace-nowrap">男</td>
+                            <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2</td>
+                            <td class="px-6 py-4">
+                                <ul class="space-y-2">
+                                    <li class="flex justify-between">
+                                        <span>张三</span>
+                                        <span class="text-xs text-gray-500">入住180天</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>李四</span>
+                                        <span class="text-xs text-gray-500">入住150天</span>
+                                    </li>
+                                </ul>
+                                <p class="text-xs text-primary mt-1">
+                                    <i class="fa fa-plus-circle"></i> 剩余2个空位（3号床、4号床）
+                                </p>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button onclick="window.location.href='view-room.html'" class="text-primary hover:text-primary/80 text-sm">
+                                    <i class="fa fa-eye mr-1"></i>查看
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">RM00203</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2号楼</td>
+                            <td class="px-6 py-4 whitespace-nowrap">203</td>
+                            <td class="px-6 py-4 whitespace-nowrap">四人间</td>
+                            <td class="px-6 py-4 whitespace-nowrap">女</td>
+                            <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2</td>
+                            <td class="px-6 py-4">
+                                <ul class="space-y-2">
+                                    <li class="flex justify-between">
+                                        <span>王五</span>
+                                        <span class="text-xs text-gray-500">入住120天</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>赵六</span>
+                                        <span class="text-xs text-gray-500">入住90天</span>
+                                    </li>
+                                </ul>
+                                <p class="text-xs text-primary mt-1">
+                                    <i class="fa fa-plus-circle"></i> 剩余2个空位（3号床、4号床）
+                                </p>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button onclick="window.location.href='view-room.html'" class="text-primary hover:text-primary/80 text-sm">
+                                    <i class="fa fa-eye mr-1"></i>查看
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- 更多数据行... -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="flex justify-between items-center mt-6">
+                <div class="text-sm text-gray-500">
+                    共 <span id="totalCount">24</span> 个房间
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50" disabled>
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button class="px-3 py-1 bg-primary text-white rounded-md">1</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 时间显示逻辑
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // 筛选查询逻辑（包含姓名查询）
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const name = document.getElementById('searchName').value.trim();
+            const building = document.getElementById('searchBuilding').value;
+            const roomType = document.getElementById('searchRoomType').value;
+            const gender = document.getElementById('searchGender').value;
+            const status = document.getElementById('searchStatus').value;
+            
+            // 实际项目中此处应发送请求获取筛选后的数据
+            console.log('筛选条件:', { name, building, roomType, gender, status });
+            
+            // 根据姓名筛选表格内容
+            filterTableByName(name);
+        });
+        
+        // 根据姓名筛选表格内容
+        function filterTableByName(name) {
+            if (!name) return; // 如果姓名为空，不进行筛选
+            
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const detailsCell = row.querySelector('td:nth-child(8)');
+                const hasName = detailsCell.textContent.includes(name);
+                
+                // 根据是否包含姓名显示或隐藏行
+                row.style.display = hasName ? '' : 'none';
+            });
+        }
+        
+        
+    </script>
+</body>
+</html>
+    

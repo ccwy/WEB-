@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抄表历史 - 水电费管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        water: '#4096ff',
+                        electricity: '#ff7d00',
+                        gas: '#f5222d'
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm" id="currentTime"></div>
+                <div class="flex items-center">
+                    <i class="fa fa-user-circle mr-1"></i>
+                    <span class="text-sm">管理员</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-gray-800">抄表历史记录</h2>
+        </div>
+        
+        <!-- 筛选和搜索区域 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label for="readingType" class="block text-sm font-medium text-gray-700 mb-1">表类型</label>
+                    <select id="readingType" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部类型</option>
+                        <option value="water">水表</option>
+                        <option value="electricity">电表</option>
+                        <option value="gas">燃气表</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="readingBuilding" class="block text-sm font-medium text-gray-700 mb-1">楼栋</label>
+                    <select id="readingBuilding" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="all">全部楼栋</option>
+                        <option value="1">1号楼</option>
+                        <option value="2">2号楼</option>
+                        <option value="3">3号楼</option>
+                        <option value="4">4号楼</option>
+                        <option value="5">5号楼</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="readingStartDate" class="block text-sm font-medium text-gray-700 mb-1">开始日期</label>
+                    <input type="date" id="readingStartDate" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                </div>
+                
+                <div>
+                    <label for="readingEndDate" class="block text-sm font-medium text-gray-700 mb-1">结束日期</label>
+                    <input type="date" id="readingEndDate" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+                <div class="relative w-64">
+                    <input type="text" placeholder="搜索表编号或宿舍号..." 
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button id="resetFilterBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <i class="fa fa-refresh mr-1"></i>重置筛选
+                    </button>
+                    <button id="refreshReadingBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <i class="fa fa-sync mr-1"></i>刷新数据
+                    </button>
+                    <button id="exportReadingBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                        <i class="fa fa-file-excel-o mr-1"></i>导出记录
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 抄表历史记录表格 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium pb-2 border-b border-gray-200">
+                    <i class="fa fa-list-alt text-primary mr-2"></i>抄表记录列表
+                </h3>
+                <div class="flex items-center">
+                    <label for="readingPerPage" class="text-sm text-gray-500 mr-2">每页记录数:</label>
+                    <select id="readingPerPage" class="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">抄表日期</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">表类型</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">表编号</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">楼栋/宿舍</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">本次读数</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">上次读数</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用量</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">抄表人</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2024-05-31</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-water">水表</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">W-3-305-01</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/305室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">1,256.8</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">1,234.2</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">22.6 吨</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">张师傅</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-reading" data-id="1">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2024-05-31</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-electricity">电表</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">E-3-305-01</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/305室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">5,689.3</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">5,421.7</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">267.6 度</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">张师傅</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-reading" data-id="2">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2024-05-31</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-gas">燃气表</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">G-3-305-01</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/305室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">865.4</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">842.1</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">23.3 立方米</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">张师傅</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-reading" data-id="3">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2024-05-31</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-water">水表</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">W-3-306-01</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">3号楼/306室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">987.6</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">965.3</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">22.3 吨</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">张师傅</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">需复核</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-reading" data-id="4">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2024-05-30</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-electricity">电表</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">E-2-402-01</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">2号楼/402室</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">4,321.9</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">4,105.2</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">216.7 度</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">李师傅</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                <button class="text-primary hover:text-primary/80 view-reading" data-id="5">查看详情</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="flex justify-between items-center mt-4">
+                <div class="text-sm text-gray-500">显示 1 至 5 条，共 248 条记录</div>
+                <div class="flex space-x-1">
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>上一页</button>
+                    <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md">1</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">4</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">5</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">...</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">50</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">下一页</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 抄表详情模态框 -->
+    <div id="readingDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h3 class="text-lg font-semibold mb-4">抄表记录详情</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-sm text-gray-500">表类型</p>
+                    <p class="font-medium" id="detailType">水表</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">表编号</p>
+                    <p class="font-medium" id="detailMeterId">W-3-305-01</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">楼栋/宿舍</p>
+                    <p class="font-medium" id="detailLocation">3号楼/305室</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">抄表日期</p>
+                    <p class="font-medium" id="detailDate">2024-05-31</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">本次读数</p>
+                    <p class="font-medium" id="detailCurrent">1,256.8</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">上次读数</p>
+                    <p class="font-medium" id="detailPrevious">1,234.2</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">本期用量</p>
+                    <p class="font-medium" id="detailUsage">22.6 吨</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">抄表周期</p>
+                    <p class="font-medium" id="detailPeriod">30天</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">抄表人</p>
+                    <p class="font-medium" id="detailReader">张师傅</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">状态</p>
+                    <p class="font-medium" id="detailStatus">
+                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500 mb-1">抄表备注</p>
+                <p class="text-sm bg-gray-50 p-3 rounded-md" id="detailNotes">表具正常，读数清晰，无异常情况。</p>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button id="closeDetailBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出成功提示 -->
+    <div id="exportSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">导出成功</h3>
+            <p class="text-gray-600 mb-6">抄表历史记录已成功导出为Excel文件</p>
+            <div class="flex justify-center">
+                <button id="closeExportModalBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前时间
+            function updateCurrentTime() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // 设置默认日期范围（最近3个月）
+            const today = new Date();
+            const threeMonthsAgo = new Date();
+            threeMonthsAgo.setMonth(today.getMonth() - 3);
+            
+            document.getElementById('readingEndDate').value = today.toISOString().split('T')[0];
+            document.getElementById('readingStartDate').value = threeMonthsAgo.toISOString().split('T')[0];
+            
+            // 模态框控制
+            const readingDetailModal = document.getElementById('readingDetailModal');
+            const exportSuccessModal = document.getElementById('exportSuccessModal');
+            const viewReadingBtns = document.querySelectorAll('.view-reading');
+            const closeDetailBtn = document.getElementById('closeDetailBtn');
+            const closeExportModalBtn = document.getElementById('closeExportModalBtn');
+            const refreshReadingBtn = document.getElementById('refreshReadingBtn');
+            const exportReadingBtn = document.getElementById('exportReadingBtn');
+            const resetFilterBtn = document.getElementById('resetFilterBtn');
+            
+            // 查看抄表详情
+            viewReadingBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const recordId = this.getAttribute('data-id');
+                    
+                    // 根据不同记录ID模拟不同详情数据
+                    if (recordId === '1') {
+                        document.getElementById('detailType').textContent = '水表';
+                        document.getElementById('detailMeterId').textContent = 'W-3-305-01';
+                        document.getElementById('detailLocation').textContent = '3号楼/305室';
+                        document.getElementById('detailDate').textContent = '2024-05-31';
+                        document.getElementById('detailCurrent').textContent = '1,256.8';
+                        document.getElementById('detailPrevious').textContent = '1,234.2';
+                        document.getElementById('detailUsage').textContent = '22.6 吨';
+                        document.getElementById('detailPeriod').textContent = '30天';
+                        document.getElementById('detailReader').textContent = '张师傅';
+                        document.getElementById('detailStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>';
+                        document.getElementById('detailNotes').textContent = '表具正常，读数清晰，无异常情况。';
+                    } else if (recordId === '4') {
+                        document.getElementById('detailType').textContent = '水表';
+                        document.getElementById('detailMeterId').textContent = 'W-3-306-01';
+                        document.getElementById('detailLocation').textContent = '3号楼/306室';
+                        document.getElementById('detailDate').textContent = '2024-05-31';
+                        document.getElementById('detailCurrent').textContent = '987.6';
+                        document.getElementById('detailPrevious').textContent = '965.3';
+                        document.getElementById('detailUsage').textContent = '22.3 吨';
+                        document.getElementById('detailPeriod').textContent = '30天';
+                        document.getElementById('detailReader').textContent = '张师傅';
+                        document.getElementById('detailStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">需复核</span>';
+                        document.getElementById('detailNotes').textContent = '表具玻璃有轻微模糊，建议下次抄表时重点检查，必要时更换表具。';
+                    } else {
+                        document.getElementById('detailType').textContent = recordId === '2' ? '电表' : '燃气表';
+                        document.getElementById('detailMeterId').textContent = recordId === '2' ? 'E-3-305-01' : 'G-3-305-01';
+                        document.getElementById('detailLocation').textContent = '3号楼/305室';
+                        document.getElementById('detailDate').textContent = '2024-05-31';
+                        document.getElementById('detailCurrent').textContent = recordId === '2' ? '5,689.3' : '865.4';
+                        document.getElementById('detailPrevious').textContent = recordId === '2' ? '5,421.7' : '842.1';
+                        document.getElementById('detailUsage').textContent = recordId === '2' ? '267.6 度' : '23.3 立方米';
+                        document.getElementById('detailPeriod').textContent = '30天';
+                        document.getElementById('detailReader').textContent = '张师傅';
+                        document.getElementById('detailStatus').innerHTML = '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">正常</span>';
+                        document.getElementById('detailNotes').textContent = '表具正常，读数清晰，无异常情况。';
+                    }
+                    
+                    readingDetailModal.classList.remove('hidden');
+                });
+            });
+            
+            // 关闭详情模态框
+            closeDetailBtn.addEventListener('click', function() {
+                readingDetailModal.classList.add('hidden');
+            });
+            
+            // 刷新数据
+            refreshReadingBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>刷新中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert('抄表记录已成功刷新');
+                }, 1200);
+            });
+            
+            // 导出记录
+            exportReadingBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>导出中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    exportSuccessModal.classList.remove('hidden');
+                }, 1800);
+            });
+            
+            // 关闭导出提示
+            closeExportModalBtn.addEventListener('click', function() {
+                exportSuccessModal.classList.add('hidden');
+            });
+            
+            // 重置筛选条件
+            resetFilterBtn.addEventListener('click', function() {
+                document.getElementById('readingType').value = 'all';
+                document.getElementById('readingBuilding').value = 'all';
+                document.getElementById('readingStartDate').value = threeMonthsAgo.toISOString().split('T')[0];
+                document.getElementById('readingEndDate').value = today.toISOString().split('T')[0];
+                document.querySelector('input[placeholder="搜索表编号或宿舍号..."]').value = '';
+            });
+        });
+    </script>
+</body>
+</html>
+    

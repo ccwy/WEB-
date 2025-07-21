@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公告通知 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <a href="../index.html" class="text-primary hover:text-primary/80 mr-2">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <h2 class="text-2xl font-semibold text-dark">公告通知</h2>
+            </div>
+            <button id="addAnnouncementBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                <i class="fa fa-plus mr-2"></i>发布新公告
+            </button>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+            <div class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="announcementTitle" class="block text-sm font-medium text-gray-700 mb-1">公告标题</label>
+                        <input type="text" id="announcementTitle" placeholder="输入公告标题关键词"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    <div>
+                        <label for="announcementType" class="block text-sm font-medium text-gray-700 mb-1">公告类型</label>
+                        <select id="announcementType"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">所有类型</option>
+                            <option value="notice">通知</option>
+                            <option value="announcement">公告</option>
+                            <option value="reminder">提醒</option>
+                            <option value="notice">通知</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <button id="searchAnnouncementBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                        <i class="fa fa-search mr-2"></i>查询
+                    </button>
+                    <button id="resetAnnouncementBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        重置
+                    </button>
+                </div>
+                
+                <!-- 公告列表 -->
+                <div class="space-y-4">
+                    <!-- 置顶公告 -->
+                    <div class="border border-red-200 rounded-lg overflow-hidden">
+                        <div class="bg-red-50 px-4 py-2 flex justify-between items-center border-b border-red-200">
+                            <div class="flex items-center">
+                                <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded text-xs mr-2">置顶</span>
+                                <span class="font-medium">关于加强宿舍安全管理的通知</span>
+                            </div>
+                            <div class="text-sm text-gray-500">2024-03-28</div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-gray-700 mb-3">为进一步加强宿舍安全管理，保障住宿人员生命财产安全，现通知如下：</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1 text-sm">
+                                <li>严禁在宿舍内使用大功率电器（如电暖器、电饭煲等）</li>
+                                <li>离开宿舍时务必关闭所有电器电源，锁好门窗</li>
+                                <li>严禁在宿舍内私拉乱接电线</li>
+                                <li>严禁存放易燃易爆物品</li>
+                                <li>宿管部门将不定期进行安全检查，请大家配合</li>
+                            </ul>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">发布人：管理员</span>
+                                <div>
+                                    <button class="text-blue-500 hover:text-blue-700 mr-3">编辑</button>
+                                    <button class="text-red-500 hover:text-red-700">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 普通公告 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="bg-gray-50 px-4 py-2 flex justify-between items-center border-b border-gray-200">
+                            <div class="flex items-center">
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs mr-2">通知</span>
+                                <span class="font-medium">2024年4月份水电费缴纳通知</span>
+                            </div>
+                            <div class="text-sm text-gray-500">2024-04-01</div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-gray-700 mb-3">2024年4月份水电费核算工作已完成，请各宿舍及时缴纳。缴费截止日期为2024年4月15日，逾期将产生滞纳金。</p>
+                            <p class="text-gray-700 mb-3">缴费方式：</p>
+                            <ol class="list-decimal list-inside text-gray-600 mb-3 space-y-1 text-sm">
+                                <li>线上缴费：登录宿舍管理系统，进入"费用管理"模块进行在线支付</li>
+                                <li>线下缴费：前往宿舍管理处前台现金缴费</li>
+                            </ol>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">发布人：管理员</span>
+                                <div>
+                                    <button class="text-blue-500 hover:text-blue-700 mr-3">编辑</button>
+                                    <button class="text-red-500 hover:text-red-700">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="bg-gray-50 px-4 py-2 flex justify-between items-center border-b border-gray-200">
+                            <div class="flex items-center">
+                                <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs mr-2">公告</span>
+                                <span class="font-medium">关于宿舍卫生检查的公告</span>
+                            </div>
+                            <div class="text-sm text-gray-500">2024-03-25</div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-gray-700 mb-3">为保持宿舍良好的卫生环境，宿舍管理处将于2024年4月5日进行月度卫生检查。</p>
+                            <p class="text-gray-700 mb-3">检查时间：2024年4月5日 上午9:00-11:30</p>
+                            <p class="text-gray-700 mb-3">检查范围：所有宿舍楼</p>
+                            <p class="text-gray-700 mb-3">请各宿舍提前做好准备，保持宿舍整洁。检查结果将在系统公告栏公示。</p>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">发布人：管理员</span>
+                                <div>
+                                    <button class="text-blue-500 hover:text-blue-700 mr-3">编辑</button>
+                                    <button class="text-red-500 hover:text-red-700">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分页 -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-700">
+                        显示 <span class="font-medium">1</span> 到 <span class="font-medium">3</span> 条，共 <span class="font-medium">8</span> 条记录
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-1 border border-primary bg-primary text-white rounded">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50">3</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 发布/编辑公告弹窗 -->
+    <div id="announcementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold" id="modalTitle">发布新公告</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow">
+                <div class="space-y-4">
+                    <div>
+                        <label for="modalAnnouncementTitle" class="block text-sm font-medium text-gray-700 mb-1">公告标题 <span class="text-red-500">*</span></label>
+                        <input type="text" id="modalAnnouncementTitle" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    <div>
+                        <label for="modalAnnouncementType" class="block text-sm font-medium text-gray-700 mb-1">公告类型 <span class="text-red-500">*</span></label>
+                        <select id="modalAnnouncementType" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">请选择公告类型</option>
+                            <option value="notice">通知</option>
+                            <option value="announcement">公告</option>
+                            <option value="reminder">提醒</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="modalAnnouncementContent" class="block text-sm font-medium text-gray-700 mb-1">公告内容 <span class="text-red-500">*</span></label>
+                        <textarea id="modalAnnouncementContent" rows="8" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="modalIsPinned" class="form-checkbox text-primary">
+                            <span class="ml-2 text-sm text-gray-700">置顶公告</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button id="cancelModalBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="saveAnnouncementBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">保存公告</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-exclamation-triangle text-2xl text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-center">确认删除</h3>
+            <p class="text-gray-600 mb-4 text-center">您确定要删除此公告吗？此操作不可恢复。</p>
+            <div class="flex justify-center gap-3">
+                <button id="cancelDeleteBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="confirmDeleteBtn" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作成功提示 -->
+    <div id="successToast" class="fixed bottom-6 right-6 px-6 py-3 bg-green-50 text-green-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center">
+        <i class="fa fa-check-circle text-green-500 mr-2"></i>
+        <span id="successMessage"></span>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addAnnouncementBtn = document.getElementById('addAnnouncementBtn');
+            const announcementModal = document.getElementById('announcementModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const saveAnnouncementBtn = document.getElementById('saveAnnouncementBtn');
+            const deleteButtons = document.querySelectorAll('.text-red-500.hover\\:text-red-700');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const successToast = document.getElementById('successToast');
+            const successMessage = document.getElementById('successMessage');
+            const searchAnnouncementBtn = document.getElementById('searchAnnouncementBtn');
+            const resetAnnouncementBtn = document.getElementById('resetAnnouncementBtn');
+            
+            // 打开发布公告弹窗
+            addAnnouncementBtn.addEventListener('click', function() {
+                document.getElementById('modalTitle').textContent = '发布新公告';
+                document.getElementById('modalAnnouncementTitle').value = '';
+                document.getElementById('modalAnnouncementType').value = '';
+                document.getElementById('modalAnnouncementContent').value = '';
+                document.getElementById('modalIsPinned').checked = false;
+                announcementModal.classList.remove('hidden');
+            });
+            
+            // 关闭弹窗
+            closeModalBtn.addEventListener('click', function() {
+                announcementModal.classList.add('hidden');
+            });
+            
+            cancelModalBtn.addEventListener('click', function() {
+                announcementModal.classList.add('hidden');
+            });
+            
+            // 保存公告
+            saveAnnouncementBtn.addEventListener('click', function() {
+                const title = document.getElementById('modalAnnouncementTitle').value;
+                const type = document.getElementById('modalAnnouncementType').value;
+                const content = document.getElementById('modalAnnouncementContent').value;
+                
+                if (!title || !type || !content) {
+                    alert('请填写所有必填字段');
+                    return;
+                }
+                
+                // 模拟保存
+                announcementModal.classList.add('hidden');
+                showSuccessToast('公告发布成功');
+            });
+            
+            // 打开删除确认弹窗
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    deleteConfirmModal.classList.remove('hidden');
+                });
+            });
+            
+            // 关闭删除确认弹窗
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteConfirmModal.classList.add('hidden');
+            });
+            
+            // 确认删除
+            confirmDeleteBtn.addEventListener('click', function() {
+                deleteConfirmModal.classList.add('hidden');
+                showSuccessToast('公告已成功删除');
+            });
+            
+            // 显示成功提示
+            function showSuccessToast(message) {
+                successMessage.textContent = message;
+                successToast.classList.remove('translate-y-20', 'opacity-0');
+                successToast.classList.add('translate-y-0', 'opacity-100');
+                
+                setTimeout(() => {
+                    successToast.classList.remove('translate-y-0', 'opacity-100');
+                    successToast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            }
+            
+            // 查询公告
+            searchAnnouncementBtn.addEventListener('click', function() {
+                // 显示加载状态
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>查询中...';
+                this.disabled = true;
+                
+                // 模拟查询延迟
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fa fa-search mr-2"></i>查询';
+                    this.disabled = false;
+                }, 800);
+            });
+            
+            // 重置查询条件
+            resetAnnouncementBtn.addEventListener('click', function() {
+                document.getElementById('announcementTitle').value = '';
+                document.getElementById('announcementType').value = '';
+            });
+            
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

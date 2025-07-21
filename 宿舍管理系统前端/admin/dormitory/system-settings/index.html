@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统设置 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                        dark: '#1F2937'
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <h2 class="text-2xl font-semibold mb-6 text-dark">系统设置</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- 左侧导航 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden sticky top-4">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200">
+                        <h3 class="font-medium">设置菜单</h3>
+                    </div>
+                    <ul>
+                        <li>
+                            <a href="#system-title" class="block px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center">
+                                <i class="fa fa-titles text-gray-500 mr-3 w-5 text-center"></i>
+                                系统标题设置
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#password-change" class="block px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center">
+                                <i class="fa fa-lock text-gray-500 mr-3 w-5 text-center"></i>
+                                密码修改
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#database" class="block px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center">
+                                <i class="fa fa-database text-gray-500 mr-3 w-5 text-center"></i>
+                                数据库管理
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#backup" class="block px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center">
+                                <i class="fa fa-backup text-gray-500 mr-3 w-5 text-center"></i>
+                                数据备份与恢复
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#dormitory-management" class="block px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center">
+                                <i class="fa fa-building text-gray-500 mr-3 w-5 text-center"></i>
+                                宿舍管理设置
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 右侧设置内容 -->
+            <div class="lg:col-span-2">
+                <!-- 系统标题设置 -->
+                <div id="system-title" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">系统标题设置</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="systemTitle" class="block text-sm font-medium text-gray-700 mb-1">系统标题</label>
+                            <input type="text" id="systemTitle" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <p class="mt-1 text-xs text-gray-500">显示在浏览器标题和系统顶部的标题</p>
+                        </div>
+                        
+                        <div>
+                            <label for="mainPageTitle" class="block text-sm font-medium text-gray-700 mb-1">主页面标题</label>
+                            <input type="text" id="mainPageTitle" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <p class="mt-1 text-xs text-gray-500">显示在系统主页面的标题</p>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button id="saveTitleBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                保存设置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 密码修改 -->
+                <div id="password-change" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">密码修改</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="currentUser" class="block text-sm font-medium text-gray-700 mb-1">当前用户</label>
+                            <input type="text" id="currentUser" value="admin" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-md focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">当前密码 <span class="text-red-500">*</span></label>
+                            <input type="password" id="currentPassword" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">新密码 <span class="text-red-500">*</span></label>
+                            <input type="password" id="newPassword" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <p class="mt-1 text-xs text-gray-500">密码长度至少8位，包含字母和数字</p>
+                        </div>
+                        
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">确认新密码 <span class="text-red-500">*</span></label>
+                            <input type="password" id="confirmPassword" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button id="changePasswordBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                修改密码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据库管理 -->
+                <div id="database" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">数据库管理</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-medium mb-3">数据库信息</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-gray-50 p-3 rounded-md">
+                                    <p class="text-gray-500">数据库类型</p>
+                                    <p class="font-medium">MySQL</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-md">
+                                    <p class="text-gray-500">版本</p>
+                                    <p class="font-medium">8.0.28</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-md">
+                                    <p class="text-gray-500">数据库名</p>
+                                    <p class="font-medium">dormitory_management</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-md">
+                                    <p class="text-gray-500">最后备份时间</p>
+                                    <p class="font-medium">2024-03-28 23:00:00</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <button id="initDatabaseBtn" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 mr-3">
+                                <i class="fa fa-refresh mr-2"></i>初始化数据库
+                            </button>
+                            <p class="mt-2 text-sm text-red-500">
+                                <i class="fa fa-exclamation-circle mr-1"></i> 警告：初始化数据库将清除所有数据，恢复到初始状态，请谨慎操作！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据备份与恢复 -->
+                <div id="backup" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">数据备份与恢复</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <button id="backupDataBtn" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 mb-4">
+                                <i class="fa fa-download mr-2"></i>备份数据
+                            </button>
+                            <p class="text-sm text-gray-500">
+                                <i class="fa fa-info-circle mr-1"></i> 备份当前所有数据到本地
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-3">恢复数据</h4>
+                            <div class="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
+                                <i class="fa fa-file-text-o text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500 mb-2">上传备份文件恢复数据</p>
+                                <p class="text-gray-500 text-sm mb-3">支持 .sql 或 .bak 格式文件</p>
+                                <input type="file" id="backupFile" accept=".sql,.bak" class="hidden">
+                                <button onclick="document.getElementById('backupFile').click()" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                    选择备份文件
+                                </button>
+                            </div>
+                            <p class="mt-3 text-sm text-red-500">
+                                <i class="fa fa-exclamation-circle mr-1"></i> 警告：恢复数据将覆盖当前所有数据，请谨慎操作！
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-3">备份历史</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3 text-left font-medium text-gray-500">备份文件</th>
+                                            <th scope="col" class="px-4 py-3 text-left font-medium text-gray-500">备份时间</th>
+                                            <th scope="col" class="px-4 py-3 text-left font-medium text-gray-500">文件大小</th>
+                                            <th scope="col" class="px-4 py-3 text-left font-medium text-gray-500">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-4 py-3 whitespace-nowrap">backup_20240328.sql</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">2024-03-28 23:00:00</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">2.4 MB</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <a href="#" class="text-blue-500 hover:text-blue-700 mr-3">下载</a>
+                                                <a href="#" class="text-green-500 hover:text-green-700 mr-3">恢复</a>
+                                                <a href="#" class="text-red-500 hover:text-red-700">删除</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 whitespace-nowrap">backup_20240315.sql</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">2024-03-15 23:00:00</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">2.2 MB</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <a href="#" class="text-blue-500 hover:text-blue-700 mr-3">下载</a>
+                                                <a href="#" class="text-green-500 hover:text-green-700 mr-3">恢复</a>
+                                                <a href="#" class="text-red-500 hover:text-red-700">删除</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 宿舍管理设置 -->
+                <div id="dormitory-management" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">宿舍管理设置</h3>
+                    
+                    <!-- 设置选项卡 -->
+                    <div class="border-b border-gray-200 mb-6 overflow-x-auto">
+                        <ul class="flex flex-nowrap -mb-px" id="settingsTabs" role="tablist">
+                            <li class="mr-2" role="presentation">
+                                <button class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-primary text-primary rounded-t-lg" 
+                                        id="building-tab" data-tab="building" type="button" role="tab">
+                                    <i class="fa fa-building mr-2"></i>宿舍楼管理
+                                </button>
+                            </li>
+                            <li class="mr-2" role="presentation">
+                                <button class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-t-lg" 
+                                        id="room-type-tab" data-tab="room-type" type="button" role="tab">
+                                    <i class="fa fa-th-large mr-2"></i>房间类型管理
+                                </button>
+                            </li>
+                            <li class="mr-2" role="presentation">
+                                <button class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-t-lg" 
+                                        id="room-status-tab" data-tab="room-status" type="button" role="tab">
+                                    <i class="fa fa-tags mr-2"></i>房间状态管理
+                                </button>
+                            </li>
+                            <li role="presentation">
+                                <button class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-t-lg" 
+                                        id="room-facility-tab" data-tab="room-facility" type="button" role="tab">
+                                    <i class="fa fa-cogs mr-2"></i>房间设施管理
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 宿舍楼管理 -->
+                    <div class="tab-content" id="building-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium">宿舍楼管理</h3>
+                            <button id="addBuildingBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                <i class="fa fa-plus mr-2"></i>添加宿舍楼
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">宿舍楼名称</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">房间数量</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">是否默认</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">B01</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">1号楼</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">男生宿舍</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">40</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">是</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-building" data-id="B01">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-building" data-id="B01" data-name="1号楼">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">B02</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">2号楼</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">男生宿舍</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">40</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">否</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-building" data-id="B02">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-building" data-id="B02" data-name="2号楼">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">B03</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">3号楼</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">女生宿舍</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">40</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">否</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-building" data-id="B03">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-building" data-id="B03" data-name="3号楼">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 房间类型管理 -->
+                    <div class="tab-content hidden" id="room-type-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium">房间类型管理</h3>
+                            <button id="addRoomTypeBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                <i class="fa fa-plus mr-2"></i>添加房间类型
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型名称</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">容纳人数</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">是否默认</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RT01</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">四人间</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">4</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">标准四人间，上床下桌</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">是</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-type" data-id="RT01">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-type" data-id="RT01" data-name="四人间">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RT02</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">六人间</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">6</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">标准六人间，上下铺</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">否</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-type" data-id="RT02">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-type" data-id="RT02" data-name="六人间">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RT03</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">单人间</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">1</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">单人独间，带独立卫浴</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">否</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-type" data-id="RT03">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-type" data-id="RT03" data-name="单人间">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 房间状态管理 -->
+                    <div class="tab-content hidden" id="room-status-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium">房间状态管理</h3>
+                            <button id="addRoomStatusBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                <i class="fa fa-plus mr-2"></i>添加房间状态
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态名称</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态颜色</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RS01</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">空闲</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">绿色</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">房间当前无人居住</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-status" data-id="RS01">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-status" data-id="RS01" data-name="空闲">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RS02</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">已占用</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">蓝色</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">房间已有学生入住</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-status" data-id="RS02">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-status" data-id="RS02" data-name="已占用">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RS03</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">已满</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">灰色</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">房间已住满</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-status" data-id="RS03">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-status" data-id="RS03" data-name="已满">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RS04</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">维修中</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">黄色</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">房间正在维修，不可入住</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-status" data-id="RS04">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-status" data-id="RS04" data-name="维修中">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 房间设施管理 -->
+                    <div class="tab-content hidden" id="room-facility-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium">房间设施管理</h3>
+                            <button id="addRoomFacilityBtn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+                                <i class="fa fa-plus mr-2"></i>添加房间设施
+                            </button>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="facilityCategoryFilter" class="block text-sm font-medium text-gray-700 mb-2">按类别筛选</label>
+                            <select id="facilityCategoryFilter"
+                                    class="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="all">所有类别</option>
+                                <option value="electrical">电器类</option>
+                                <option value="furniture">家具类</option>
+                                <option value="bathroom">卫浴类</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">设施名称</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类别</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">图标</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RF01</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">空调</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">电器类</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <i class="fa fa-snowflake-o text-xl text-primary"></i>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">冷暖空调</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-facility" data-id="RF01">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-facility" data-id="RF01" data-name="空调">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RF02</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">床</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">家具类</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <i class="fa fa-bed text-xl text-primary"></i>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">标准单人床</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-facility" data-id="RF02">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-facility" data-id="RF02" data-name="床">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RF03</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">书桌</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">家具类</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <i class="fa fa-cube text-xl text-primary"></i>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">带书架的学习桌</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-facility" data-id="RF03">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-facility" data-id="RF03" data-name="书桌">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">RF04</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">热水</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">卫浴类</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <i class="fa fa-shower text-xl text-primary"></i>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">24小时热水供应</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-3 edit-room-facility" data-id="RF04">编辑</button>
+                                            <button class="text-red-500 hover:text-red-700 delete-room-facility" data-id="RF04" data-name="热水">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 弹窗组件 -->
+    <!-- 添加/编辑宿舍楼弹窗 -->
+    <div id="buildingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold" id="buildingModalTitle">添加宿舍楼</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="buildingForm">
+                    <input type="hidden" id="buildingId">
+                    
+                    <div class="mb-4">
+                        <label for="buildingName" class="block text-sm font-medium text-gray-700 mb-1">宿舍楼名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="buildingName" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="例如：1号楼、男生宿舍楼">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="buildingDescription" class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea id="buildingDescription" rows="3"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="对宿舍楼进行简要描述"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="buildingRoomCount" class="block text-sm font-medium text-gray-700 mb-1">房间数量 <span class="text-red-500">*</span></label>
+                        <input type="number" id="buildingRoomCount" min="1" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="buildingIsDefault" class="form-checkbox text-primary">
+                            <span class="ml-2 text-sm text-gray-700">设为默认宿舍楼</span>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mr-3">取消</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑房间类型弹窗 -->
+    <div id="roomTypeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold" id="roomTypeModalTitle">添加房间类型</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="roomTypeForm">
+                    <input type="hidden" id="roomTypeId">
+                    
+                    <div class="mb-4">
+                        <label for="roomTypeName" class="block text-sm font-medium text-gray-700 mb-1">类型名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="roomTypeName" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="例如：四人间、单人间">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomTypeCapacity" class="block text-sm font-medium text-gray-700 mb-1">容纳人数 <span class="text-red-500">*</span></label>
+                        <input type="number" id="roomTypeCapacity" min="1" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomTypeDescription" class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea id="roomTypeDescription" rows="3"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="对房间类型进行简要描述"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="roomTypeIsDefault" class="form-checkbox text-primary">
+                            <span class="ml-2 text-sm text-gray-700">设为默认房间类型</span>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mr-3">取消</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑房间状态弹窗 -->
+    <div id="roomStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold" id="roomStatusModalTitle">添加房间状态</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="roomStatusForm">
+                    <input type="hidden" id="roomStatusId">
+                    
+                    <div class="mb-4">
+                        <label for="roomStatusName" class="block text-sm font-medium text-gray-700 mb-1">状态名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="roomStatusName" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="例如：空闲、已占用">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomStatusColor" class="block text-sm font-medium text-gray-700 mb-1">状态颜色 <span class="text-red-500">*</span></label>
+                        <input type="text" id="roomStatusColor" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="例如：绿色、#00ff00">
+                        
+                        <div class="flex mt-2 space-x-2" id="statusColorOptions">
+                            <span class="status-color-option w-6 h-6 rounded-full bg-green-500 cursor-pointer" data-color="绿色"></span>
+                            <span class="status-color-option w-6 h-6 rounded-full bg-blue-500 cursor-pointer" data-color="蓝色"></span>
+                            <span class="status-color-option w-6 h-6 rounded-full bg-yellow-500 cursor-pointer" data-color="黄色"></span>
+                            <span class="status-color-option w-6 h-6 rounded-full bg-red-500 cursor-pointer" data-color="红色"></span>
+                            <span class="status-color-option w-6 h-6 rounded-full bg-gray-500 cursor-pointer" data-color="灰色"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomStatusDescription" class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea id="roomStatusDescription" rows="3"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="对房间状态进行简要描述"></textarea>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mr-3">取消</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑房间设施弹窗 -->
+    <div id="roomFacilityModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold" id="roomFacilityModalTitle">添加房间设施</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="roomFacilityForm">
+                    <input type="hidden" id="roomFacilityId">
+                    
+                    <div class="mb-4">
+                        <label for="roomFacilityName" class="block text-sm font-medium text-gray-700 mb-1">设施名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="roomFacilityName" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="例如：空调、书桌、热水">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomFacilityCategory" class="block text-sm font-medium text-gray-700 mb-1">设施类别 <span class="text-red-500">*</span></label>
+                        <select id="roomFacilityCategory" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">请选择类别</option>
+                            <option value="electrical">电器类</option>
+                            <option value="furniture">家具类</option>
+                            <option value="bathroom">卫浴类</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">选择图标 <span class="text-red-500">*</span></label>
+                        <div class="flex flex-wrap gap-2 mb-2" id="iconOptions">
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-bed">
+                                <i class="fa fa-bed text-xl"></i>
+                            </span>
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-snowflake-o">
+                                <i class="fa fa-snowflake-o text-xl"></i>
+                            </span>
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-television">
+                                <i class="fa fa-television text-xl"></i>
+                            </span>
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-wifi">
+                                <i class="fa fa-wifi text-xl"></i>
+                            </span>
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-shower">
+                                <i class="fa fa-shower text-xl"></i>
+                            </span>
+                            <span class="icon-option w-10 h-10 flex items-center justify-center border border-gray-200 rounded-md cursor-pointer hover:border-primary" data-icon="fa-cube">
+                                <i class="fa fa-cube text-xl"></i>
+                            </span>
+                        </div>
+                        <input type="hidden" id="selectedIconInput">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="roomFacilityDescription" class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea id="roomFacilityDescription" rows="3"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                               placeholder="对房间设施进行简要描述"></textarea>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mr-3">取消</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-exclamation-triangle text-2xl text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-center">确认删除</h3>
+            <p class="text-gray-600 mb-6 text-center" id="deleteConfirmMessage">您确定要删除此记录吗？此操作不可恢复。</p>
+            <div class="flex justify-center gap-3">
+                <button id="cancelDeleteBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="confirmDeleteBtn" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示组件 -->
+    <div id="toast" class="fixed bottom-6 right-6 px-6 py-3 rounded-md shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center">
+        <i id="toastIcon" class="mr-2"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <div id="successToast" class="fixed bottom-6 right-6 px-6 py-3 bg-green-50 text-green-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center">
+        <i class="fa fa-check-circle text-green-500 mr-2"></i>
+        <span id="successMessage"></span>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div id="confirmDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4" id="dialogTitle"></h3>
+            <p class="text-gray-600 mb-6" id="dialogMessage"></p>
+            <div class="flex justify-end gap-3">
+                <button id="dialogCancelBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="dialogConfirmBtn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面元素获取
+            const tabs = document.querySelectorAll('#settingsTabs button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const addBuildingBtn = document.getElementById('addBuildingBtn');
+            const addRoomTypeBtn = document.getElementById('addRoomTypeBtn');
+            const addRoomStatusBtn = document.getElementById('addRoomStatusBtn');
+            const addRoomFacilityBtn = document.getElementById('addRoomFacilityBtn');
+            const buildingModal = document.getElementById('buildingModal');
+            const roomTypeModal = document.getElementById('roomTypeModal');
+            const roomStatusModal = document.getElementById('roomStatusModal');
+            const roomFacilityModal = document.getElementById('roomFacilityModal');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const deleteConfirmMessage = document.getElementById('deleteConfirmMessage');
+            const closeModals = document.querySelectorAll('.close-modal');
+            const successToast = document.getElementById('successToast');
+            const successMessage = document.getElementById('successMessage');
+            const statusColorOptions = document.querySelectorAll('.status-color-option');
+            const roomStatusColor = document.getElementById('roomStatusColor');
+            const iconOptions = document.querySelectorAll('.icon-option');
+            const selectedIconInput = document.getElementById('selectedIconInput');
+            const facilityCategoryFilter = document.getElementById('facilityCategoryFilter');
+            
+            // 当前删除项的ID和类型
+            let currentDeleteId = '';
+            let currentDeleteType = '';
+            let selectedIcon = '';
+            
+            // 加载当前系统标题设置
+            loadSystemSettings();
+            
+            // 选项卡切换
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有选项卡的活动状态
+                    tabs.forEach(t => {
+                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    
+                    // 隐藏所有内容
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // 激活当前选项卡
+                    tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    tab.classList.add('border-primary', 'text-primary');
+                    
+                    // 显示对应内容
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+            
+            // 打开添加宿舍楼弹窗
+            addBuildingBtn.addEventListener('click', () => {
+                document.getElementById('buildingModalTitle').textContent = '添加宿舍楼';
+                document.getElementById('buildingForm').reset();
+                document.getElementById('buildingId').value = '';
+                buildingModal.classList.remove('hidden');
+            });
+            
+            // 打开编辑宿舍楼弹窗
+            document.querySelectorAll('.edit-building').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    document.getElementById('buildingModalTitle').textContent = '编辑宿舍楼';
+                    document.getElementById('buildingId').value = id;
+                    document.getElementById('buildingName').value = `${id.replace('B', '')}号楼`;
+                    // 在实际应用中，这里会从服务器加载数据
+                    buildingModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开删除确认弹窗 - 宿舍楼
+            document.querySelectorAll('.delete-building').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentDeleteId = btn.getAttribute('data-id');
+                    currentDeleteType = 'building';
+                    const name = btn.getAttribute('data-name');
+                    deleteConfirmMessage.textContent = `您确定要删除宿舍楼"${name}"吗？此操作不可恢复。`;
+                    deleteConfirmModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开添加房间类型弹窗
+            addRoomTypeBtn.addEventListener('click', () => {
+                document.getElementById('roomTypeModalTitle').textContent = '添加房间类型';
+                document.getElementById('roomTypeForm').reset();
+                document.getElementById('roomTypeId').value = '';
+                roomTypeModal.classList.remove('hidden');
+            });
+            
+            // 打开编辑房间类型弹窗
+            document.querySelectorAll('.edit-room-type').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    document.getElementById('roomTypeModalTitle').textContent = '编辑房间类型';
+                    document.getElementById('roomTypeId').value = id;
+                    // 在实际应用中，这里会从服务器加载数据
+                    roomTypeModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开删除确认弹窗 - 房间类型
+            document.querySelectorAll('.delete-room-type').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentDeleteId = btn.getAttribute('data-id');
+                    currentDeleteType = 'room-type';
+                    const name = btn.getAttribute('data-name');
+                    deleteConfirmMessage.textContent = `您确定要删除房间类型"${name}"吗？此操作不可恢复。`;
+                    deleteConfirmModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开添加房间状态弹窗
+            addRoomStatusBtn.addEventListener('click', () => {
+                document.getElementById('roomStatusModalTitle').textContent = '添加房间状态';
+                document.getElementById('roomStatusForm').reset();
+                document.getElementById('roomStatusId').value = '';
+                roomStatusModal.classList.remove('hidden');
+            });
+            
+            // 打开编辑房间状态弹窗
+            document.querySelectorAll('.edit-room-status').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    document.getElementById('roomStatusModalTitle').textContent = '编辑房间状态';
+                    document.getElementById('roomStatusId').value = id;
+                    // 在实际应用中，这里会从服务器加载数据
+                    roomStatusModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开删除确认弹窗 - 房间状态
+            document.querySelectorAll('.delete-room-status').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentDeleteId = btn.getAttribute('data-id');
+                    currentDeleteType = 'room-status';
+                    const name = btn.getAttribute('data-name');
+                    deleteConfirmMessage.textContent = `您确定要删除房间状态"${name}"吗？此操作不可恢复。`;
+                    deleteConfirmModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开添加房间设施弹窗
+            addRoomFacilityBtn.addEventListener('click', () => {
+                document.getElementById('roomFacilityModalTitle').textContent = '添加房间设施';
+                document.getElementById('roomFacilityForm').reset();
+                document.getElementById('roomFacilityId').value = '';
+                selectedIcon = '';
+                iconOptions.forEach(icon => {
+                    icon.classList.remove('border-primary', 'bg-primary/10');
+                });
+                roomFacilityModal.classList.remove('hidden');
+            });
+            
+            // 打开编辑房间设施弹窗
+            document.querySelectorAll('.edit-room-facility').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    document.getElementById('roomFacilityModalTitle').textContent = '编辑房间设施';
+                    document.getElementById('roomFacilityId').value = id;
+                    // 在实际应用中，这里会从服务器加载数据
+                    roomFacilityModal.classList.remove('hidden');
+                });
+            });
+            
+            // 打开删除确认弹窗 - 房间设施
+            document.querySelectorAll('.delete-room-facility').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentDeleteId = btn.getAttribute('data-id');
+                    currentDeleteType = 'room-facility';
+                    const name = btn.getAttribute('data-name');
+                    deleteConfirmMessage.textContent = `您确定要删除房间设施"${name}"吗？此操作不可恢复。`;
+                    deleteConfirmModal.classList.remove('hidden');
+                });
+            });
+            
+            // 关闭弹窗
+            closeModals.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buildingModal.classList.add('hidden');
+                    roomTypeModal.classList.add('hidden');
+                    roomStatusModal.classList.add('hidden');
+                    roomFacilityModal.classList.add('hidden');
+                    deleteConfirmModal.classList.add('hidden');
+                });
+            });
+            
+            // 取消删除
+            cancelDeleteBtn.addEventListener('click', () => {
+                deleteConfirmModal.classList.add('hidden');
+                currentDeleteId = '';
+                currentDeleteType = '';
+            });
+            
+            // 确认删除
+            confirmDeleteBtn.addEventListener('click', () => {
+                // 模拟删除操作
+                setTimeout(() => {
+                    deleteConfirmModal.classList.add('hidden');
+                    showSuccessToast(`${getTypeName(currentDeleteType)}已删除`);
+                    currentDeleteId = '';
+                    currentDeleteType = '';
+                }, 500);
+            });
+            
+            // 状态颜色选择
+            statusColorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    roomStatusColor.value = option.getAttribute('data-color');
+                });
+            });
+            
+            // 图标选择
+            iconOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    iconOptions.forEach(icon => {
+                        icon.classList.remove('border-primary', 'bg-primary/10');
+                    });
+                    option.classList.add('border-primary', 'bg-primary/10');
+                    selectedIcon = option.getAttribute('data-icon');
+                    selectedIconInput.value = selectedIcon;
+                });
+            });
+            
+            // 提交宿舍楼表单
+            document.getElementById('buildingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const isEdit = !!document.getElementById('buildingId').value;
+                
+                // 模拟保存操作
+                setTimeout(() => {
+                    buildingModal.classList.add('hidden');
+                    showSuccessToast(isEdit ? '宿舍楼信息已更新' : '新宿舍楼已添加');
+                }, 800);
+            });
+            
+            // 提交房间类型表单
+            document.getElementById('roomTypeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const isEdit = !!document.getElementById('roomTypeId').value;
+                
+                // 模拟保存操作
+                setTimeout(() => {
+                    roomTypeModal.classList.add('hidden');
+                    showSuccessToast(isEdit ? '房间类型信息已更新' : '新房间类型已添加');
+                }, 800);
+            });
+            
+            // 提交房间状态表单
+            document.getElementById('roomStatusForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const isEdit = !!document.getElementById('roomStatusId').value;
+                
+                // 模拟保存操作
+                setTimeout(() => {
+                    roomStatusModal.classList.add('hidden');
+                    showSuccessToast(isEdit ? '房间状态信息已更新' : '新房间状态已添加');
+                }, 800);
+            });
+            
+            // 提交房间设施表单
+            document.getElementById('roomFacilityForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 验证是否选择了图标
+                if (!selectedIcon) {
+                    alert('请选择一个图标');
+                    return;
+                }
+                
+                const isEdit = !!document.getElementById('roomFacilityId').value;
+                
+                // 模拟保存操作
+                setTimeout(() => {
+                    roomFacilityModal.classList.add('hidden');
+                    showSuccessToast(isEdit ? '房间设施信息已更新' : '新房间设施已添加');
+                }, 800);
+            });
+            
+            // 设施类别筛选
+            facilityCategoryFilter.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                // 在实际应用中，这里会根据选择的类别筛选设施列表
+                console.log('筛选类别:', selectedCategory);
+            });
+            
+            // 保存系统标题设置
+            document.getElementById('saveTitleBtn').addEventListener('click', function() {
+                const systemTitle = document.getElementById('systemTitle').value;
+                const mainPageTitle = document.getElementById('mainPageTitle').value;
+                
+                if (!systemTitle || !mainPageTitle) {
+                    showToast('请填写所有标题字段', 'error');
+                    return;
+                }
+                
+                // 保存到本地存储
+                localStorage.setItem('systemTitle', systemTitle);
+                localStorage.setItem('mainPageTitle', mainPageTitle);
+                
+                showToast('系统标题设置已保存', 'success');
+            });
+            
+            // 修改密码
+            document.getElementById('changePasswordBtn').addEventListener('click', function() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // 验证密码
+                if (!currentPassword) {
+                    showToast('请输入当前密码', 'error');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    showToast('新密码长度至少8位', 'error');
+                    return;
+                }
+                
+                if (!/\d/.test(newPassword) || !/[a-zA-Z]/.test(newPassword)) {
+                    showToast('新密码必须包含字母和数字', 'error');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showToast('两次输入的新密码不一致', 'error');
+                    return;
+                }
+                
+                // 模拟密码修改
+                showToast('密码修改成功，请重新登录', 'success');
+                // 清空表单
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            });
+            
+            // 初始化数据库
+            document.getElementById('initDatabaseBtn').addEventListener('click', function() {
+                showConfirmDialog(
+                    '确认初始化数据库',
+                    '初始化数据库将清除所有数据，恢复到初始状态。此操作不可恢复，您确定要继续吗？',
+                    function() {
+                        // 模拟数据库初始化
+                        showToast('数据库初始化成功', 'success');
+                    }
+                );
+            });
+            
+            // 备份数据
+            document.getElementById('backupDataBtn').addEventListener('click', function() {
+                // 显示加载状态
+                this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>备份中...';
+                this.disabled = true;
+                
+                // 模拟备份过程
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fa fa-download mr-2"></i>备份数据';
+                    this.disabled = false;
+                    showToast('数据备份成功', 'success');
+                }, 1500);
+            });
+            
+            // 备份文件选择
+            document.getElementById('backupFile').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const fileName = e.target.files[0].name;
+                    showConfirmDialog(
+                        '确认恢复数据',
+                        `您确定要使用 ${fileName} 恢复数据吗？这将覆盖当前所有数据。`,
+                        function() {
+                            showToast('数据恢复成功', 'success');
+                            // 清空文件选择
+                            e.target.value = '';
+                        }
+                    );
+                }
+            });
+            
+            // 确认对话框相关
+            const confirmDialog = document.getElementById('confirmDialog');
+            const dialogTitle = document.getElementById('dialogTitle');
+            const dialogMessage = document.getElementById('dialogMessage');
+            const dialogCancelBtn = document.getElementById('dialogCancelBtn');
+            const dialogConfirmBtn = document.getElementById('dialogConfirmBtn');
+            let confirmCallback = null;
+            
+            function showConfirmDialog(title, message, callback) {
+                dialogTitle.textContent = title;
+                dialogMessage.textContent = message;
+                confirmCallback = callback;
+                confirmDialog.classList.remove('hidden');
+            }
+            
+            dialogCancelBtn.addEventListener('click', function() {
+                confirmDialog.classList.add('hidden');
+                confirmCallback = null;
+            });
+            
+            dialogConfirmBtn.addEventListener('click', function() {
+                confirmDialog.classList.add('hidden');
+                if (typeof confirmCallback === 'function') {
+                    confirmCallback();
+                }
+                confirmCallback = null;
+            });
+            
+            // 显示提示信息
+            function showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const toastIcon = document.getElementById('toastIcon');
+                const toastMessage = document.getElementById('toastMessage');
+                
+                toastMessage.textContent = message;
+                
+                // 设置图标和样式
+                if (type === 'success') {
+                    toastIcon.className = 'fa fa-check-circle text-green-500 mr-2';
+                    toast.className = 'fixed bottom-6 right-6 px-6 py-3 bg-green-50 text-green-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-0 opacity-100 z-50 flex items-center';
+                } else if (type === 'error') {
+                    toastIcon.className = 'fa fa-times-circle text-red-500 mr-2';
+                    toast.className = 'fixed bottom-6 right-6 px-6 py-3 bg-red-50 text-red-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-0 opacity-100 z-50 flex items-center';
+                } else {
+                    toastIcon.className = 'fa fa-info-circle text-blue-500 mr-2';
+                    toast.className = 'fixed bottom-6 right-6 px-6 py-3 bg-blue-50 text-blue-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-0 opacity-100 z-50 flex items-center';
+                }
+                
+                // 3秒后隐藏
+                setTimeout(() => {
+                    toast.className = 'fixed bottom-6 right-6 px-6 py-3 rounded-md shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center';
+                }, 3000);
+            }
+            
+            // 显示成功提示
+            function showSuccessToast(message) {
+                const toast = document.getElementById('successToast');
+                const msgElement = document.getElementById('successMessage');
+                
+                msgElement.textContent = message;
+                toast.className = 'fixed bottom-6 right-6 px-6 py-3 bg-green-50 text-green-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-0 opacity-100 z-50 flex items-center';
+                
+                // 3秒后隐藏
+                setTimeout(() => {
+                    toast.className = 'fixed bottom-6 right-6 px-6 py-3 bg-green-50 text-green-800 rounded-md shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center';
+                }, 3000);
+            }
+            
+            // 加载系统设置
+            function loadSystemSettings() {
+                const systemTitle = localStorage.getItem('systemTitle') || '宿舍管理系统';
+                const mainPageTitle = localStorage.getItem('mainPageTitle') || '宿舍管理系统';
+                
+                document.getElementById('systemTitle').value = systemTitle;
+                document.getElementById('mainPageTitle').value = mainPageTitle;
+                document.title = `${systemTitle} - 系统设置`;
+            }
+            
+            // 获取类型名称
+            function getTypeName(type) {
+                const typeMap = {
+                    'building': '宿舍楼',
+                    'room-type': '房间类型',
+                    'room-status': '房间状态',
+                    'room-facility': '房间设施'
+                };
+                return typeMap[type] || '记录';
+            }
+            
+            // 更新日期时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

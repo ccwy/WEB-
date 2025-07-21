@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分配宿舍 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-dark">分配宿舍</h2>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 选择用户 -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">选择未分配用户</h3>
+                    
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input type="text" id="searchPerson" placeholder="搜索用户..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-md h-[400px] overflow-y-auto mb-4">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
+                                        <input type="checkbox" id="selectAllPersons">
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">姓名</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">性别</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">部门</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="person-checkbox" data-id="101" data-gender="男">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">钱七</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">男</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">技术部</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="person-checkbox" data-id="102" data-gender="女">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">孙八</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">女</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">财务部</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="person-checkbox" data-id="103" data-gender="男">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">周九</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">男</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">市场部</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="person-checkbox" data-id="104" data-gender="女">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">吴十</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">女</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">行政部</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-sm text-gray-500">
+                        共 <span id="totalPersons">4</span> 名未分配用户
+                    </div>
+                </div>
+                
+                <!-- 选择宿舍 -->
+                <div class="lg:col-span-2">
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">选择可用宿舍</h3>
+                    
+                    <div class="mb-4 flex flex-wrap gap-3">
+                        <div class="relative">
+                            <input type="text" id="searchDorm" placeholder="搜索宿舍号..." 
+                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        
+                        <select id="buildingFilter" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">所有楼栋</option>
+                            <option value="1号楼">1号楼</option>
+                            <option value="2号楼">2号楼</option>
+                            <option value="3号楼">3号楼</option>
+                            <option value="4号楼">4号楼</option>
+                        </select>
+                        
+                        <select id="genderFilter" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">所有性别</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                        
+                        <select id="capacityFilter" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="">所有容量</option>
+                            <option value="2">2人间</option>
+                            <option value="4">4人间</option>
+                            <option value="6">6人间</option>
+                        </select>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-md h-[400px] overflow-y-auto mb-4">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
+                                        <input type="checkbox" id="selectAllDorms">
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">楼栋</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">宿舍号</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">性别</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">容量</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">已住</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">可用</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">使用率</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="dorm-checkbox" data-id="201" data-gender="男" data-available="1">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">1号楼</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">101室</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">男</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">4</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">3</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">1</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                                        </div>
+                                        <span class="text-xs">75%</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="dorm-checkbox" data-id="202" data-gender="男" data-available="4">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">1号楼</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">102室</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">男</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">4</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">0</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">4</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                        <span class="text-xs">0%</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="dorm-checkbox" data-id="203" data-gender="女" data-available="2">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2号楼</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">203室</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">女</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">4</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                        <span class="text-xs">50%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分配信息 -->
+                    <div class="bg-gray-50 p-4 rounded-md mb-4">
+                        <h4 class="font-medium mb-2">分配信息</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">选中用户</p>
+                                <p class="font-medium" id="selectedPersonsCount">0人</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">选中宿舍</p>
+                                <p class="font-medium" id="selectedDormsCount">0间</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">入住日期</p>
+                                <input type="date" id="checkinDate" 
+                                       class="w-full px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="window.location.href='index.html'" 
+                                class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                        <button type="button" id="confirmAllocationBtn" 
+                                class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50" disabled>
+                            确认分配
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 分配确认模态框 -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">确认分配</h3>
+            <p class="text-gray-600 mb-4">您确定要将选中的用户分配到选中的宿舍吗？</p>
+            <div class="bg-gray-50 p-4 rounded-md mb-4 text-sm">
+                <p><span class="font-medium">选中用户：</span><span id="modalPersons">钱七、周九</span></p>
+                <p><span class="font-medium">分配宿舍：</span><span id="modalDorms">1号楼101室、1号楼102室</span></p>
+                <p><span class="font-medium">入住日期：</span><span id="modalCheckinDate">2024-03-15</span></p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button id="cancelModalBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="submitAllocationBtn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllPersons = document.getElementById('selectAllPersons');
+            const personCheckboxes = document.querySelectorAll('.person-checkbox');
+            const selectAllDorms = document.getElementById('selectAllDorms');
+            const dormCheckboxes = document.querySelectorAll('.dorm-checkbox');
+            const selectedPersonsCount = document.getElementById('selectedPersonsCount');
+            const selectedDormsCount = document.getElementById('selectedDormsCount');
+            const confirmAllocationBtn = document.getElementById('confirmAllocationBtn');
+            const confirmModal = document.getElementById('confirmModal');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const submitAllocationBtn = document.getElementById('submitAllocationBtn');
+            const checkinDate = document.getElementById('checkinDate');
+            
+            // 设置默认入住日期为今天（北京时区）
+            const today = new Date();
+            const beijingDate = new Date(today.getTime() + 8 * 60 * 60 * 1000);
+            checkinDate.value = beijingDate.toISOString().split('T')[0];
+            
+            // 全选/取消全选用户
+            selectAllPersons.addEventListener('change', function() {
+                personCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCounts();
+                validateAllocation();
+            });
+            
+            // 全选/取消全选宿舍
+            selectAllDorms.addEventListener('change', function() {
+                dormCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCounts();
+                validateAllocation();
+            });
+            
+            // 用户选择变化
+            personCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const allChecked = Array.from(personCheckboxes).every(cb => cb.checked);
+                    selectAllPersons.checked = allChecked;
+                    updateSelectedCounts();
+                    validateAllocation();
+                });
+            });
+            
+            // 宿舍选择变化
+            dormCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const allChecked = Array.from(dormCheckboxes).every(cb => cb.checked);
+                    selectAllDorms.checked = allChecked;
+                    updateSelectedCounts();
+                    validateAllocation();
+                });
+            });
+            
+            // 更新选中数量
+            function updateSelectedCounts() {
+                const personCount = Array.from(personCheckboxes).filter(cb => cb.checked).length;
+                const dormCount = Array.from(dormCheckboxes).filter(cb => cb.checked).length;
+                
+                selectedPersonsCount.textContent = `${personCount}人`;
+                selectedDormsCount.textContent = `${dormCount}间`;
+            }
+            
+            // 验证分配是否有效
+            function validateAllocation() {
+                const selectedPersons = Array.from(personCheckboxes).filter(cb => cb.checked);
+                const selectedDorms = Array.from(dormCheckboxes).filter(cb => cb.checked);
+                
+                if (selectedPersons.length === 0 || selectedDorms.length === 0) {
+                    confirmAllocationBtn.disabled = true;
+                    return;
+                }
+                
+                // 检查性别匹配
+                const genders = new Set(selectedPersons.map(p => p.dataset.gender));
+                if (genders.size > 1) {
+                    // 选中用户包含不同性别
+                    confirmAllocationBtn.disabled = true;
+                    return;
+                }
+                
+                // 检查宿舍是否匹配用户性别
+                const personGender = genders.values().next().value;
+                const hasMismatch = selectedDorms.some(d => d.dataset.gender !== personGender);
+                if (hasMismatch) {
+                    confirmAllocationBtn.disabled = true;
+                    return;
+                }
+                
+                // 检查宿舍容量是否足够
+                const totalPersons = selectedPersons.length;
+                const totalAvailable = selectedDorms.reduce((sum, dorm) => sum + parseInt(dorm.dataset.available), 0);
+                
+                confirmAllocationBtn.disabled = totalPersons > totalAvailable;
+            }
+            
+            // 打开确认模态框
+            confirmAllocationBtn.addEventListener('click', function() {
+                const selectedPersons = Array.from(personCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.closest('tr').querySelector('td:nth-child(2)').textContent);
+                
+                const selectedDorms = Array.from(dormCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => {
+                        const row = cb.closest('tr');
+                        return `${row.querySelector('td:nth-child(2)').textContent}${row.querySelector('td:nth-child(3)').textContent}`;
+                    });
+                
+                document.getElementById('modalPersons').textContent = selectedPersons.join('、');
+                document.getElementById('modalDorms').textContent = selectedDorms.join('、');
+                document.getElementById('modalCheckinDate').textContent = checkinDate.value;
+                
+                confirmModal.classList.remove('hidden');
+            });
+            
+            // 关闭确认模态框
+            cancelModalBtn.addEventListener('click', function() {
+                confirmModal.classList.add('hidden');
+            });
+            
+            // 提交分配
+            submitAllocationBtn.addEventListener('click', function() {
+                confirmModal.classList.add('hidden');
+                alert('宿舍分配成功！');
+                window.location.href = 'index.html';
+            });
+            
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+                document.getElementById('currentYear').textContent = now.getFullYear();
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>

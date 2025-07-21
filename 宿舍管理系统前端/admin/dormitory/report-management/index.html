@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报告管理 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <h2 class="text-2xl font-semibold text-center mb-12 text-dark">报告管理</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- 宿舍入住报告 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-home text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">宿舍入住报告</h3>
+                <p class="text-gray-500 text-sm mb-4">统计各宿舍入住情况和用户分布</p>
+                <button onclick="window.location.href='dorm-occupancy-report.html'" 
+                        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                    生成报告
+                </button>
+            </div>
+            
+            <!-- 水电费报告 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-bolt text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">水电费报告</h3>
+                <p class="text-gray-500 text-sm mb-4">分析水电费使用趋势和费用统计</p>
+                <button onclick="window.location.href='utility-fee-report.html'" 
+                        class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                    生成报告
+                </button>
+            </div>
+            
+            <!-- 房间空置率报告 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-bar-chart text-2xl text-amber-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">房间空置率报告</h3>
+                <p class="text-gray-500 text-sm mb-4">分析各楼栋房间空置情况和趋势</p>
+                <button onclick="window.location.href='room-vacancy-report.html'" 
+                        class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600">
+                    生成报告
+                </button>
+            </div>
+            
+            <!-- 用户入住率报告 -->
+            <div class="bg-white rounded-xl p-6 shadow-sm card-hover text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <i class="fa fa-users text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-dark mb-2">用户入住率报告</h3>
+                <p class="text-gray-500 text-sm mb-4">统计用户入住情况和部门分布</p>
+                <button onclick="window.location.href='person-occupancy-report.html'" 
+                        class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600">
+                    生成报告
+                </button>
+            </div>
+        </div>
+        
+        <!-- 报告历史 -->
+        <div class="mt-12 bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+            <h3 class="text-xl font-semibold mb-6 text-dark">报告历史</h3>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">报告名称</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">生成日期</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">生成人</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">2024年3月宿舍入住报告</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2024-04-01</td>
+                            <td class="px-6 py-4 whitespace-nowrap">管理员</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已生成</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="#" class="text-blue-500 hover:text-blue-700 mr-3">查看</a>
+                                <a href="#" class="text-green-500 hover:text-green-700 mr-3">下载</a>
+                                <a href="#" class="text-red-500 hover:text-red-700">删除</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">2024年2月水电费报告</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2024-03-02</td>
+                            <td class="px-6 py-4 whitespace-nowrap">管理员</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已生成</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="#" class="text-blue-500 hover:text-blue-700 mr-3">查看</a>
+                                <a href="#" class="text-green-500 hover:text-green-700 mr-3">下载</a>
+                                <a href="#" class="text-red-500 hover:text-red-700">删除</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">2024年第一季度房间空置率报告</td>
+                            <td class="px-6 py-4 whitespace-nowrap">2024-04-01</td>
+                            <td class="px-6 py-4 whitespace-nowrap">管理员</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已生成</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="#" class="text-blue-500 hover:text-blue-700 mr-3">查看</a>
+                                <a href="#" class="text-green-500 hover:text-green-700 mr-3">下载</a>
+                                <a href="#" class="text-red-500 hover:text-red-700">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> 宿舍管理系统 - 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 设置北京时区时间
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Shanghai'
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+            document.getElementById('currentYear').textContent = now.getFullYear();
+        }
+        
+        // 初始化时间并设置定时器
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>

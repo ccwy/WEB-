@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>办理退宿 - 宿舍管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center mb-6">
+            <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <h2 class="text-2xl font-semibold text-dark">办理退宿</h2>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+            <form id="checkoutForm">
+                <!-- 用户信息 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">用户信息</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="personId" class="block text-sm font-medium text-gray-700 mb-1">用户ID</label>
+                            <input type="text" id="personId" value="P202400156" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="personName" class="block text-sm font-medium text-gray-700 mb-1">姓名 <span class="text-red-500">*</span></label>
+                            <input type="text" id="personName" value="张三" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="personNo" class="block text-sm font-medium text-gray-700 mb-1">学号/工号</label>
+                            <input type="text" id="personNo" value="2022014568" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700 mb-1">所属院系/部门</label>
+                            <input type="text" id="department" value="计算机科学与技术学院" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 住宿信息 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">当前住宿信息</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="currentBuilding" class="block text-sm font-medium text-gray-700 mb-1">宿舍楼</label>
+                            <input type="text" id="currentBuilding" value="3号楼" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="currentRoom" class="block text-sm font-medium text-gray-700 mb-1">宿舍号</label>
+                            <input type="text" id="currentRoom" value="305室" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="bedNo" class="block text-sm font-medium text-gray-700 mb-1">床位号</label>
+                            <input type="text" id="bedNo" value="1号床" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="checkinDate" class="block text-sm font-medium text-gray-700 mb-1">入住日期</label>
+                            <input type="text" id="checkinDate" value="2023-09-01" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="currentRoommates" class="block text-sm font-medium text-gray-700 mb-1">当前室友</label>
+                            <input type="text" id="currentRoommates" value="李四、王五、赵六" readonly
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 退宿信息 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">退宿信息 <span class="text-red-500">*</span></h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label for="checkoutDate" class="block text-sm font-medium text-gray-700 mb-1">退宿日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="checkoutDate" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        
+                        <div>
+                            <label for="checkoutReasonType" class="block text-sm font-medium text-gray-700 mb-1">退宿原因类型 <span class="text-red-500">*</span></label>
+                            <select id="checkoutReasonType" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="">请选择退宿原因</option>
+                                <option value="graduate">毕业</option>
+                                <option value="transfer">转学/调职</option>
+                                <option value="leave">休学/离职</option>
+                                <option value="change">更换宿舍</option>
+                                <option value="other">其他原因</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="checkoutReason" class="block text-sm font-medium text-gray-700 mb-1">退宿原因详情 <span class="text-red-500">*</span></label>
+                        <textarea id="checkoutReason" rows="4" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                  placeholder="请详细说明退宿原因..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- 物品交接 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">物品交接</h3>
+                    
+                    <div class="space-y-3">
+                        <label class="flex items-start p-2 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="mt-1">
+                            <span class="ml-3">钥匙/门禁卡已归还</span>
+                        </label>
+                        <label class="flex items-start p-2 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="mt-1">
+                            <span class="ml-3">家具设备完好无损</span>
+                        </label>
+                        <label class="flex items-start p-2 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="mt-1">
+                            <span class="ml-3">水电费已结清</span>
+                        </label>
+                        <label class="flex items-start p-2 hover:bg-gray-50 rounded">
+                            <input type="checkbox" class="mt-1">
+                            <span class="ml-3">宿舍卫生已达标</span>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="remarks" class="block text-sm font-medium text-gray-700 mb-1">备注信息</label>
+                        <textarea id="remarks" rows="3"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                  placeholder="其他需要说明的事项..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <a href="index.html" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</a>
+                    <button type="button" id="submitCheckoutBtn" class="px-6 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600">提交退宿申请</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 确认退宿模态框 -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">确认退宿</h3>
+            <p class="text-gray-600 mb-4">您确定要为该用户办理退宿手续吗？</p>
+            <div class="bg-gray-50 p-4 rounded-md mb-4 text-sm">
+                <p><span class="font-medium">姓名：</span><span id="modalPersonName">张三</span></p>
+                <p><span class="font-medium">宿舍：</span><span id="modalRoom">3号楼305室</span></p>
+                <p><span class="font-medium">退宿日期：</span><span id="modalCheckoutDate">2024-04-10</span></p>
+                <p><span class="font-medium">原因类型：</span><span id="modalReasonType">毕业</span></p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button id="cancelModalBtn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                <button id="confirmSubmitBtn" class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600">确认退宿</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交成功提示 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <i class="fa fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">提交成功</h3>
+            <p class="text-gray-600 mb-4">退宿申请已成功提交</p>
+            <p class="text-gray-600 mb-6">退宿单号：CO20240410001</p>
+            <div class="flex justify-center gap-3">
+                <button id="newCheckoutBtn" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">新的退宿申请</button>
+                <a href="index.html" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">返回列表</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前时间
+            function updateCurrentTime() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+
+            // 默认设置退宿日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkoutDate').value = today;
+
+            // 模态框控制
+            const confirmModal = document.getElementById('confirmModal');
+            const successModal = document.getElementById('successModal');
+            const submitCheckoutBtn = document.getElementById('submitCheckoutBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+            const newCheckoutBtn = document.getElementById('newCheckoutBtn');
+
+            // 打开确认模态框
+            submitCheckoutBtn.addEventListener('click', function() {
+                // 简单表单验证
+                const checkoutDate = document.getElementById('checkoutDate').value;
+                const reasonType = document.getElementById('checkoutReasonType').value;
+                const reason = document.getElementById('checkoutReason').value;
+
+                if (!checkoutDate || !reasonType || !reason) {
+                    alert('请填写完整的退宿信息');
+                    return;
+                }
+
+                // 更新模态框内容
+                document.getElementById('modalCheckoutDate').textContent = checkoutDate;
+                document.getElementById('modalReasonType').textContent = 
+                    document.getElementById('checkoutReasonType').options[
+                        document.getElementById('checkoutReasonType').selectedIndex
+                    ].text;
+                
+                confirmModal.classList.remove('hidden');
+            });
+
+            // 关闭确认模态框
+            cancelModalBtn.addEventListener('click', function() {
+                confirmModal.classList.add('hidden');
+            });
+
+            // 确认提交退宿申请
+            confirmSubmitBtn.addEventListener('click', function() {
+                confirmModal.classList.add('hidden');
+                
+                // 模拟提交延迟
+                setTimeout(() => {
+                    successModal.classList.remove('hidden');
+                }, 800);
+            });
+
+            // 新的退宿申请
+            newCheckoutBtn.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+                document.getElementById('checkoutForm').reset();
+                document.getElementById('checkoutDate').value = today;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宿舍管理系统 - 用户详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .btn-effect {
+                transition: all 0.2s ease;
+            }
+            .btn-effect:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 顶部蓝色导航栏（与其他页面保持一致） -->
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">
+                <a href="../dormitory/index.html" class="flex items-center">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    宿舍管理系统
+                </a>
+            </h1>
+            <div class="text-sm" id="currentTime"></div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- 侧边导航 -->
+        <div id="sidebar-container"></div>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <section class="container mx-auto px-4 py-6">
+                <!-- 页面标题和操作按钮 -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                    <div class="flex items-center">
+                        <a href="index.html" class="text-primary hover:text-primary/80 mr-2">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">用户详情</h2>
+                            <p class="text-gray-500 mt-1">查看和管理用户的详细信息</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="editUserBtn" class="px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary/5 btn-effect">
+                            <i class="fa fa-pencil mr-2"></i>编辑用户
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 用户基本信息卡片 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6 card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-shrink-0">
+                                <img src="https://picsum.photos/id/1027/120/120" alt="用户照片" class="w-28 h-28 rounded-full object-cover border-4 border-gray-100">
+                            </div>
+                            
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                                <div>
+                                    <h3 class="text-sm text-gray-500">姓名</h3>
+                                    <p class="font-medium text-lg">张三</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">学号</h3>
+                                    <p class="font-medium">2023001456</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">学院</h3>
+                                    <p class="font-medium">计算机科学与技术学院</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">专业</h3>
+                                    <p class="font-medium">软件工程</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">年级</h3>
+                                    <p class="font-medium">2023级</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">联系电话</h3>
+                                    <p class="font-medium">13812345678</p> <!-- 显示完整电话号码 -->
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">入住日期</h3>
+                                    <p class="font-medium">2023-09-01</p>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm text-gray-500">预计退房日期</h3>
+                                    <p class="font-medium">2027-06-30</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 用户详细信息和住宿信息 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- 用户详细信息 -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden card-hover lg:col-span-1">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="font-medium flex items-center">
+                                <i class="fa fa-user text-primary mr-2"></i>
+                                用户详细信息
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-4">
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">性别</span>
+                                    <span class="font-medium">男</span>
+                                </li>
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">出生日期</span>
+                                    <span class="font-medium">2005-03-15</span>
+                                </li>
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">身份证号</span>
+                                    <span class="font-medium">110********5678</span>
+                                </li>
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">政治面貌</span>
+                                    <span class="font-medium">共青团员</span>
+                                </li>
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">籍贯</span>
+                                    <span class="font-medium">北京市</span>
+                                </li>
+                                <li class="flex justify-between pb-4 border-b border-gray-100">
+                                    <span class="text-gray-500">邮箱</span>
+                                    <span class="font-medium">zhangsan@example.com</span>
+                                </li>
+                                <li class="flex justify-between">
+                                    <span class="text-gray-500">紧急联系人</span>
+                                    <span class="font-medium">张父 (13956781234)</span> <!-- 显示完整紧急联系人电话 -->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- 住宿信息 -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden card-hover lg:col-span-2">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="font-medium flex items-center">
+                                <i class="fa fa-home text-primary mr-2"></i>
+                                住宿信息
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-medium mb-3">宿舍分配</h4>
+                                    <ul class="space-y-3">
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">宿舍楼</span>
+                                            <span class="font-medium">3号楼</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">房间号</span>
+                                            <span class="font-medium">305室</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">床位号</span>
+                                            <span class="font-medium">2号床</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">房间类型</span>
+                                            <span class="font-medium">四人间</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">住宿状态</span>
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">正常住宿</span>
+                                        </li>
+                                        <li class="flex justify-between">
+                                            <span class="text-gray-500">每月住宿费</span>
+                                            <span class="font-medium">1200元</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-medium mb-3">房间设施</h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="flex items-center">
+                                            <i class="fa fa-snowflake-o text-primary mr-2"></i>
+                                            <span>空调</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-television text-primary mr-2"></i>
+                                            <span>电视</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-wifi text-primary mr-2"></i>
+                                            <span>WiFi</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-shower text-primary mr-2"></i>
+                                            <span>热水</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-lock text-primary mr-2"></i>
+                                            <span>独立锁</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-bath text-primary mr-2"></i>
+                                            <span>独立卫生间</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 class="font-medium mt-6 mb-3">室友信息</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span>李四 (1号床)</span>
+                                            <span class="text-green-500 text-xs"><i class="fa fa-signal mr-1"></i>在线</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span>王五 (3号床)</span>
+                                            <span class="text-gray-400 text-xs"><i class="fa fa-signal mr-1"></i>离线</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm text-gray-500">
+                                            <span>4号床 (空位)</span>
+                                            <span>-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 费用记录 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden card-hover mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="font-medium flex items-center">
+                            <i class="fa fa-credit-card text-primary mr-2"></i>
+                            费用记录
+                        </h3>
+                        <a href="dormitory/utility-fees/fee-history.html" class="text-primary text-sm hover:underline btn-effect">
+                            查看全部记录 <i class="fa fa-angle-right ml-1"></i>
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">月份</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">金额</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支付方式</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支付时间</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap">2024年6月</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">¥1,200.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已支付</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">校园统一支付</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-06-05</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 btn-effect">查看详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap">2024年5月</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">¥1,200.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已支付</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">校园统一支付</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-05-03</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 btn-effect">查看详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap">2024年7月</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">¥1,200.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs">未支付</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">-</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-blue-500 hover:text-blue-700 btn-effect">立即支付</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 变动记录 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden card-hover">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="font-medium flex items-center">
+                            <i class="fa fa-history text-primary mr-2"></i>
+                            用户变动记录
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex pb-4 border-b border-gray-100">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                                    <i class="fa fa-sign-in text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">办理入住</p>
+                                    <p class="text-sm text-gray-500 mt-1">从临时宿舍迁入3号楼305室</p>
+                                    <p class="text-xs text-gray-400 mt-2">2023-09-01 09:30:25 <span class="ml-2">管理员：张老师</span></p>
+                                </div>
+                            </div>
+                            <div class="flex pb-4 border-b border-gray-100">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                                    <i class="fa fa-edit text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">更换床位</p>
+                                    <p class="text-sm text-gray-500 mt-1">从3号床调整至2号床</p>
+                                    <p class="text-xs text-gray-400 mt-2">2023-10-15 14:20:11 <span class="ml-2">管理员：李老师</span></p>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+                                    <i class="fa fa-check-circle text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">信息更新</p>
+                                    <p class="text-sm text-gray-500 mt-1">更新联系电话和紧急联系人信息</p>
+                                    <p class="text-xs text-gray-400 mt-2">2024-01-20 16:45:08 <span class="ml-2">系统自动记录</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../assets/js/common.js"></script>
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载共用组件
+            fetch('../components/sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('sidebar-container').innerHTML = data;
+                    
+                    // 高亮当前页面导航
+                    const currentPage = 'view-user.html';
+                    const navLinks = document.querySelectorAll('aside a');
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href').includes(currentPage)) {
+                            link.classList.add('bg-primary/5', 'text-primary', 'border-primary');
+                            link.classList.remove('text-gray-700', 'hover:bg-primary/5', 'hover:text-primary', 'border-transparent', 'hover:border-primary');
+                        }
+                    });
+                });
+
+            // 设置北京时区时间
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                };
+                document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+            }
+            
+            // 初始化时间并设置定时器
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+
+            // 初始化用户详情页面功能
+            initUserDetails();
+        });
+
+        // 初始化用户详情页面功能
+        function initUserDetails() {
+            const editUserBtn = document.getElementById('editUserBtn');
+
+            // 编辑用户按钮点击事件
+            editUserBtn.addEventListener('click', () => {
+                // 获取URL中的用户ID
+                const userId = new URLSearchParams(window.location.search).get('id');
+                if (userId) {
+                    window.location.href = `edit-user.html?id=${userId}`;
+                } else {
+                    showNotification('无法获取用户信息', 'error');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+    
